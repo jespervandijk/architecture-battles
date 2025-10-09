@@ -1,4 +1,5 @@
 using FastEndpoints;
+using Qowaiv;
 using StudentEnrollment.Domain.Courses;
 
 namespace StudentEnrollment.Application.UseCases.Courses;
@@ -13,14 +14,19 @@ public class CreateCourseEndpoint : Endpoint<CreateCourse, CourseId>
 
     public override async Task HandleAsync(CreateCourse req, CancellationToken ct)
     {
-
         Response = await req.ExecuteAsync();
     }
 }
 
-public class CreateCourse : ICommand<CourseId>
+public record CreateCourse : ICommand<CourseId>
 {
+    public required Year Year { get; init; }
 
+    public required Semester Semester { get; init; }
+
+    public required string Title { get; init; }
+
+    public required string Description { get; init; }
 }
 
 public class CreateCourseValidator : Validator<CreateCourse>
