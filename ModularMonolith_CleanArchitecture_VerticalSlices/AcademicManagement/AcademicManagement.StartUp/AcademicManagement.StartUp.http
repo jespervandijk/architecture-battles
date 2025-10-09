@@ -1,0 +1,6 @@
+@AcademicManagement.StartUp_HostAddress = http://localhost:5264
+
+GET {{AcademicManagement.StartUp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
