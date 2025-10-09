@@ -10,4 +10,8 @@
     <ProjectReference Include="..\AcademicManagement.Domain\AcademicManagement.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FastEndpoints" Version="5.17.1" />
+  </ItemGroup>
+
 </Project>
