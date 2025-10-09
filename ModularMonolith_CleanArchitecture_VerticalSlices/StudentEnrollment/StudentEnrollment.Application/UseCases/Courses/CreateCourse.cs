@@ -1,5 +1,6 @@
 using FastEndpoints;
 using Qowaiv;
+using StudentEnrollment.Application.Abstractions.Repositories;
 using StudentEnrollment.Domain.Courses;
 
 namespace StudentEnrollment.Application.UseCases.Courses;
@@ -39,8 +40,16 @@ public class CreateCourseValidator : Validator<CreateCourse>
 
 public class CreateCourseHandler : ICommandHandler<CreateCourse, CourseId>
 {
-    public Task<CourseId> ExecuteAsync(CreateCourse command, CancellationToken ct)
+    private readonly ICourseRepository _courseRepository;
+
+    public CreateCourseHandler(ICourseRepository courseRepository)
     {
-        throw new NotImplementedException();
+        _courseRepository = courseRepository;
+    }
+    public async Task<CourseId> ExecuteAsync(CreateCourse command, CancellationToken ct)
+    {
+        var course = new Course(command.Year, command.Semester, command.Title, command.Description);
+        await _courseRepository.Create(course);
+        return course.Id;
     }
 }

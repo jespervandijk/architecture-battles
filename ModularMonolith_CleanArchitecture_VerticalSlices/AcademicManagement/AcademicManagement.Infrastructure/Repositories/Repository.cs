@@ -2,22 +2,27 @@ namespace AcademicManagement.Infrastructure.Repositories;
 
 public abstract class Repository<TEntity, TId>
 {
-    public List<TEntity> GetAll()
+    public async Task<List<TEntity>> GetAll()
     {
         throw new NotImplementedException();
     }
 
-    public TEntity GetById(TId id)
+    public async Task<TEntity> GetById(TId id)
     {
         throw new NotImplementedException();
     }
 
-    public void Update(TEntity entity)
+    public async Task Update(TEntity entity)
     {
         throw new NotImplementedException();
     }
 
-    public void Delete(TEntity entity)
+    public async Task Delete(TEntity entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task Create(TEntity entity)
     {
         throw new NotImplementedException();
     }
