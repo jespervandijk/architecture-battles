@@ -1,4 +1,4 @@
-namespace AcademicManagement.Application.Abstractions;
+namespace AcademicManagement.Application.Abstractions.Repositories;
 
 public interface IRepository<TEntity, TId>
 {

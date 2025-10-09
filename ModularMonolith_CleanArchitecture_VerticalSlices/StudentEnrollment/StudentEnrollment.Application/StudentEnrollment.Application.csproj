@@ -14,4 +14,8 @@
     <PackageReference Include="FastEndpoints" Version="5.17.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UseCases\" />
+  </ItemGroup>
+
 </Project>
