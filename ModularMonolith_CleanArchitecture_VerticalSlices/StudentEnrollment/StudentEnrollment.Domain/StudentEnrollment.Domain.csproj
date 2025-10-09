@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Qowaiv" Version="7.4.5" />
+    <PackageReference Include="Vogen" Version="8.0.2" />
+  </ItemGroup>
+
 </Project>

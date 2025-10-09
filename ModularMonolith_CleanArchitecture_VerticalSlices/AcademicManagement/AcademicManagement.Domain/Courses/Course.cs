@@ -2,17 +2,17 @@ namespace AcademicManagement.Domain.Courses;
 
 public class Course
 {
-    public CourseId Id { get; set; }
+    public CourseId Id { get; private set; }
 
-    public required string Title { get; set; }
+    public string Title { get; private set; }
 
-    public required string Description { get; set; }
+    public string Description { get; private set; }
 
-    public required Credits Credits { get; set; }
+    public Credits Credits { get; private set; }
 
-    public required int MaxCapacity { get; set; }
+    public int MaxCapacity { get; private set; }
 
-    public CourseStatus Status { get; set; }
+    public CourseStatus Status { get; private set; }
 
     public Course(string title, string description, Credits credits, int maxCapacity, CourseStatus status)
     {
