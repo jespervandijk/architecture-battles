@@ -17,7 +17,11 @@ builder.Services
     .SwaggerDocument(options =>
     {
         options.DocumentSettings =
-            settings => settings.SchemaSettings.TypeMappers.AddValueObjectTypeMappers();
+            settings =>
+            {
+                settings.SchemaSettings.TypeMappers.AddValueObjectTypeMappers();
+                settings.MarkNonNullablePropsAsRequired();
+            };
     });
 
 var app = builder.Build();
