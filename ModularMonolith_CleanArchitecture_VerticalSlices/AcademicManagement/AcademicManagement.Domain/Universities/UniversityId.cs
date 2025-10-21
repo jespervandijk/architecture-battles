@@ -5,4 +5,5 @@ namespace AcademicManagement.Domain.Universities;
 [ValueObject<Guid>]
 public partial struct UniversityId
 {
+    public static UniversityId Next() => From(Guid.NewGuid());
 }
