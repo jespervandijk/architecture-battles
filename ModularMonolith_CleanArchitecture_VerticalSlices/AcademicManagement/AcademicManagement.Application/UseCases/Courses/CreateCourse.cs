@@ -10,7 +10,7 @@ public class CreateCourseEndpoint : Endpoint<CreateCourse, CourseId>
 {
     public override void Configure()
     {
-        Post("api/course/create");
+        Post("api/academic-management/course/create");
         AllowAnonymous();
     }
 
