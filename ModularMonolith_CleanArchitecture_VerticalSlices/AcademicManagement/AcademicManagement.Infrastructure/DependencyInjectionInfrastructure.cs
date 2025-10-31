@@ -9,7 +9,7 @@ namespace AcademicManagement.Infrastructure;
 public static class InfrastructureDependencyInjection
 {
 
-    public static IServiceCollection AddFromInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddFromAcademicManagementInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMarten(options =>
         {

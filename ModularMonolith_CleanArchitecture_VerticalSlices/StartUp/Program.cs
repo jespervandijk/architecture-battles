@@ -22,6 +22,7 @@ builder.Services
                 settings.MarkNonNullablePropsAsRequired();
             };
     });
+builder.Services.AddServicesAllModules(builder.Configuration);
 
 var app = builder.Build();
 
