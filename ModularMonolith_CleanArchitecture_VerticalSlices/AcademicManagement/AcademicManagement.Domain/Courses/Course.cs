@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AcademicManagement.Domain.Departments;
 using AcademicManagement.Domain.Professors;
 using AcademicManagement.Domain.Universities;
@@ -28,6 +29,9 @@ public class Course
 
     public List<Section> Sections { get; set; }
 
+    [JsonConstructor]
+    private Course() { }
+
     private Course(string title, string description, Credits credits, int maxCapacity, CourseStatus status)
     {
         Id = CourseId.Next();
@@ -38,5 +42,8 @@ public class Course
         Status = status;
     }
 
-
+    public static Course Create(string title, string description, Credits credits, int maxCapacity, CourseStatus status)
+    {
+        return new Course(title, description, credits, maxCapacity, status);
+    }
 }

@@ -1,29 +1,45 @@
+using AcademicManagement.Application.Abstractions.Repositories;
+using Marten;
+
 namespace AcademicManagement.Infrastructure.Repositories;
 
-public abstract class Repository<TEntity, TId>
+public abstract class Repository<TEntity, TId> : IRepository<TEntity, TId>
+    where TEntity : notnull
+    where TId : notnull
 {
-    public async Task<List<TEntity>> GetAll()
+    private readonly IDocumentSession _documentSession;
+
+
+    public Repository(IDocumentSession documentSession)
     {
-        throw new NotImplementedException();
+        _documentSession = documentSession;
+    }
+
+    public async Task<IReadOnlyList<TEntity>> GetAll()
+    {
+        return await _documentSession.Query<TEntity>().ToListAsync(); ;
     }
 
     public async Task<TEntity> GetById(TId id)
     {
-        throw new NotImplementedException();
+        return await _documentSession.LoadAsync<TEntity>(id) ?? throw new KeyNotFoundException($"Entity of type {typeof(TEntity).Name} with id {id} was not found.");
     }
 
     public async Task Update(TEntity entity)
     {
-        throw new NotImplementedException();
+        _documentSession.Update(entity);
+        await _documentSession.SaveChangesAsync();
     }
 
-    public async Task Delete(TEntity entity)
+    public async Task Delete(TId id)
     {
-        throw new NotImplementedException();
+        _documentSession.Delete(id);
+        await _documentSession.SaveChangesAsync();
     }
 
     public async Task Create(TEntity entity)
     {
-        throw new NotImplementedException();
+        _documentSession.Insert(entity);
+        await _documentSession.SaveChangesAsync();
     }
 }

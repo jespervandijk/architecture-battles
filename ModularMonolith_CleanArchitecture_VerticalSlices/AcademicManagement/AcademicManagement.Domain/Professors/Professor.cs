@@ -1,3 +1,4 @@
+using AcademicManagement.Domain.Departments;
 using AcademicManagement.Domain.Universities;
 using Qowaiv;
 
@@ -15,7 +16,13 @@ public class Professor
 
     public UniversityId WorkPlace { get; private set; }
 
+    public DepartmentId Department { get; private set; }
+
     public Rank Rank { get; private set; }
+
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    private Professor() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     private Professor(string firstName, string lastName, EmailAddress emailAddress, Rank rank, UniversityId workPlace)
     {

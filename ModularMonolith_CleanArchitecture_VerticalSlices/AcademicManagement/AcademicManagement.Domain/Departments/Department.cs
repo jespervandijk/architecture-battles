@@ -10,18 +10,20 @@ public record Department
 
     public ProfessorId HeadOfDepartment { get; private set; }
 
-    public List<ProfessorId> ProfessorIds { get; private set; }
 
-    private Department(DepartmentId id, string name, ProfessorId headOfDepartment, List<ProfessorId> professorIds)
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    private Department() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
+    private Department(DepartmentId id, string name, ProfessorId headOfDepartment)
     {
         Id = id;
         Name = name;
         HeadOfDepartment = headOfDepartment;
-        ProfessorIds = professorIds;
     }
     public static Department Create(string name, ProfessorId headOfDepartment)
     {
-        return new Department(DepartmentId.Next(), name, headOfDepartment, []);
+        return new Department(DepartmentId.Next(), name, headOfDepartment);
     }
 }
 

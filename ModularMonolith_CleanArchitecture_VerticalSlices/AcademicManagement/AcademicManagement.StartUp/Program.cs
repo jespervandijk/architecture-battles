@@ -1,3 +1,5 @@
+using AcademicManagement.Application;
+using AcademicManagement.Infrastructure;
 using FastEndpoints;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddFastEndpoints();
+builder.Services.AddFromInfrastructure(builder.Configuration);
+builder.Services.AddFromApplication();
 
 var app = builder.Build();
 

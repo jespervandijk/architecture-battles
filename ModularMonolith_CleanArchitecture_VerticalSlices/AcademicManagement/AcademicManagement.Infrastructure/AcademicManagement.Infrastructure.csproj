@@ -10,4 +10,7 @@
     <ProjectReference Include="..\AcademicManagement.Application\AcademicManagement.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Marten" Version="8.13.3" />
+  </ItemGroup>
 </Project>

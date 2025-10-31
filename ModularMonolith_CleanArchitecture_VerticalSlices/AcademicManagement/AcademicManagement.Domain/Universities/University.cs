@@ -16,6 +16,10 @@ public class University
 
     // public List<ProfessorId> Professors { get; private set; }
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+    private University() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
     private University(PresidentId president, string name)
     {
         Id = UniversityId.Next();
