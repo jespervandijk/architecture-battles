@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FastEndpoints" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../AcademicManagement/AcademicManagement.Application/AcademicManagement.Application.csproj" />
+    <ProjectReference Include="../AcademicManagement/AcademicManagement.Domain/AcademicManagement.Domain.csproj" />
+    <ProjectReference Include="../AcademicManagement/AcademicManagement.Infrastructure/AcademicManagement.Infrastructure.csproj" />
+    <ProjectReference Include="../StudentEnrollment/StudentEnrollment.Application/StudentEnrollment.Application.csproj" />
+    <ProjectReference Include="../StudentEnrollment/StudentEnrollment.Domain/StudentEnrollment.Domain.csproj" />
+    <ProjectReference Include="../StudentEnrollment/StudentEnrollment.Infrastructure/StudentEnrollment.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

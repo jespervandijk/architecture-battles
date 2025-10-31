@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Qowaiv" Version="7.4.5" />
-    <PackageReference Include="Vogen" Version="8.0.2" />
+    <PackageReference Include="Qowaiv" />
+    <PackageReference Include="Vogen" />
   </ItemGroup>
 
 </Project>
