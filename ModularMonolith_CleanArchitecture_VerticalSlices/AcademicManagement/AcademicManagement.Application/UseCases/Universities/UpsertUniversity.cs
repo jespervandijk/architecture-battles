@@ -1,8 +1,6 @@
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Universities;
-using AcademicManagement.Domain.Presidents;
 using AcademicManagement.Domain.Scalars;
-using AcademicManagement.Domain.Universities;
 using FastEndpoints;
 using PresidentId = AcademicManagement.Domain.Aggregates.Presidents.PresidentId;
 using UniversityId = AcademicManagement.Domain.Aggregates.Universities.UniversityId;
@@ -14,7 +12,6 @@ public class UpsertUniversityEndpoint : Endpoint<UpsertUniversity, UniversityId>
     public override void Configure()
     {
         Post("academic-management/university/create");
-        Policies("")
     }
 
     public override async Task HandleAsync(UpsertUniversity req, CancellationToken ct)

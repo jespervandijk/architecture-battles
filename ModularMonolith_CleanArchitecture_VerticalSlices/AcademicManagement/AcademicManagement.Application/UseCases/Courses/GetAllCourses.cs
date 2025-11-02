@@ -1,6 +1,5 @@
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Courses;
-using AcademicManagement.Domain.Courses;
 using FastEndpoints;
 
 namespace AcademicManagement.Application.UseCases.Courses;

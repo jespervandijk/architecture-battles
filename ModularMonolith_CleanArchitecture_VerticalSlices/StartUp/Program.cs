@@ -1,3 +1,4 @@
+using AcademicManagement.Application;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Scalar.AspNetCore;
@@ -33,11 +34,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseOpenApi(c => c.Path = "/openapi/{documentName}.json");
     app.MapScalarApiReference(options => options
-    .AddPreferredSecuritySchemes("ApiKey")
-    .AddApiKeyAuthentication("ApiKey", apiKey =>
-    {
-        apiKey.Value = "api-key";
-    }));
+    .AddPreferredSecuritySchemes(BasicRoleAuthOptions.DefaultScheme));
 }
 
 app.UseHttpsRedirection();
