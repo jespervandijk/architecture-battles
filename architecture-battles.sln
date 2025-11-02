@@ -7,8 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ModularMonolith_CleanArchit
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AcademicManagement", "AcademicManagement", "{2EFF2C3D-62CD-7D0D-2F67-B7535FD0BDC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcademicManagement.StartUp", "ModularMonolith_CleanArchitecture_VerticalSlices\AcademicManagement\AcademicManagement.StartUp\AcademicManagement.StartUp.csproj", "{0FD17400-C498-4946-948D-269ABB039DA7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcademicManagement.Application", "ModularMonolith_CleanArchitecture_VerticalSlices\AcademicManagement\AcademicManagement.Application\AcademicManagement.Application.csproj", "{D18C90E0-04B6-4328-A14E-774993AB3237}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcademicManagement.Domain", "ModularMonolith_CleanArchitecture_VerticalSlices\AcademicManagement\AcademicManagement.Domain\AcademicManagement.Domain.csproj", "{EE7AA14B-7342-4DE1-9EA2-3723E43111CF}"
@@ -23,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentEnrollment.Domain", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentEnrollment.Infrastructure", "ModularMonolith_CleanArchitecture_VerticalSlices\StudentEnrollment\StudentEnrollment.Infrastructure\StudentEnrollment.Infrastructure.csproj", "{21209507-8081-4061-9197-8F97F48C6392}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentEnrollment.StartUp", "ModularMonolith_CleanArchitecture_VerticalSlices\StudentEnrollment\StudentEnrollment.StartUp\StudentEnrollment.StartUp.csproj", "{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,18 +31,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Debug|x64.Build.0 = Debug|Any CPU
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Debug|x86.Build.0 = Debug|Any CPU
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Release|x64.ActiveCfg = Release|Any CPU
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Release|x64.Build.0 = Release|Any CPU
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Release|x86.ActiveCfg = Release|Any CPU
-		{0FD17400-C498-4946-948D-269ABB039DA7}.Release|x86.Build.0 = Release|Any CPU
 		{D18C90E0-04B6-4328-A14E-774993AB3237}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D18C90E0-04B6-4328-A14E-774993AB3237}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D18C90E0-04B6-4328-A14E-774993AB3237}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -119,25 +103,12 @@ Global
 		{21209507-8081-4061-9197-8F97F48C6392}.Release|x64.Build.0 = Release|Any CPU
 		{21209507-8081-4061-9197-8F97F48C6392}.Release|x86.ActiveCfg = Release|Any CPU
 		{21209507-8081-4061-9197-8F97F48C6392}.Release|x86.Build.0 = Release|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Debug|x64.Build.0 = Debug|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Debug|x86.Build.0 = Debug|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Release|x64.ActiveCfg = Release|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Release|x64.Build.0 = Release|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Release|x86.ActiveCfg = Release|Any CPU
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{2EFF2C3D-62CD-7D0D-2F67-B7535FD0BDC7} = {691558A3-06B5-21FC-A5FD-23D920EDA287}
-		{0FD17400-C498-4946-948D-269ABB039DA7} = {2EFF2C3D-62CD-7D0D-2F67-B7535FD0BDC7}
 		{D18C90E0-04B6-4328-A14E-774993AB3237} = {2EFF2C3D-62CD-7D0D-2F67-B7535FD0BDC7}
 		{EE7AA14B-7342-4DE1-9EA2-3723E43111CF} = {2EFF2C3D-62CD-7D0D-2F67-B7535FD0BDC7}
 		{14F29E64-7495-4829-AD35-BEF7779F06ED} = {2EFF2C3D-62CD-7D0D-2F67-B7535FD0BDC7}
@@ -145,6 +116,5 @@ Global
 		{813C8955-FC6F-4A60-8316-3C82A5875379} = {76393548-D5FD-C84C-A814-F080CEFEC156}
 		{3D54B43B-1011-4E18-87C6-A3FA936CE10B} = {76393548-D5FD-C84C-A814-F080CEFEC156}
 		{21209507-8081-4061-9197-8F97F48C6392} = {76393548-D5FD-C84C-A814-F080CEFEC156}
-		{DEA5BED7-A695-45CE-8C0D-58928C9FD51E} = {76393548-D5FD-C84C-A814-F080CEFEC156}
 	EndGlobalSection
 EndGlobal

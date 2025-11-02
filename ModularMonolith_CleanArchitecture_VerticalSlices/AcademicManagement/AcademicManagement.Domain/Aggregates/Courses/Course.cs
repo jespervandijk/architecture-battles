@@ -1,9 +1,9 @@
 using System.Text.Json.Serialization;
-using AcademicManagement.Domain.Departments;
-using AcademicManagement.Domain.Professors;
-using AcademicManagement.Domain.Universities;
+using AcademicManagement.Domain.Aggregates.Departments;
+using AcademicManagement.Domain.Aggregates.Professors;
+using AcademicManagement.Domain.Aggregates.Universities;
 
-namespace AcademicManagement.Domain.Courses;
+namespace AcademicManagement.Domain.Aggregates.Courses;
 
 public class Course
 {

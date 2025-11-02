@@ -1,4 +1,4 @@
-using AcademicManagement.Domain.Professors;
+using AcademicManagement.Domain.Aggregates.Professors;
 
 namespace AcademicManagement.Application.Abstractions.Repositories;
 

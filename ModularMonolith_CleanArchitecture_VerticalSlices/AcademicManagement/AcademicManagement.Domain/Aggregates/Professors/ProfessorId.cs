@@ -1,7 +1,7 @@
 
 using Vogen;
 
-namespace AcademicManagement.Domain.Professors;
+namespace AcademicManagement.Domain.Aggregates.Professors;
 
 [ValueObject<Guid>]
 public partial struct ProfessorId

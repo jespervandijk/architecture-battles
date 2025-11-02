@@ -1,9 +1,9 @@
-using AcademicManagement.Domain.Departments;
-using AcademicManagement.Domain.Presidents;
-using AcademicManagement.Domain.Professors;
+using AcademicManagement.Domain.Aggregates.Departments;
+using AcademicManagement.Domain.Aggregates.Presidents;
+using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
 
-namespace AcademicManagement.Domain.Universities;
+namespace AcademicManagement.Domain.Aggregates.Universities;
 
 public class University
 {

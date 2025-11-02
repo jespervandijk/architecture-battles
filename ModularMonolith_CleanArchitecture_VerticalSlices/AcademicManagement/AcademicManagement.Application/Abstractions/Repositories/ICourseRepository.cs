@@ -1,4 +1,4 @@
-using AcademicManagement.Domain.Courses;
+using AcademicManagement.Domain.Aggregates.Courses;
 
 namespace AcademicManagement.Application.Abstractions.Repositories;
 

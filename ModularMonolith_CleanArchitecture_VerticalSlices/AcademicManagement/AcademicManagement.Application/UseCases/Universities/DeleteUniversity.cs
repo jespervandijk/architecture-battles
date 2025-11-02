@@ -1,6 +1,7 @@
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Universities;
 using FastEndpoints;
+using UniversityId = AcademicManagement.Domain.Aggregates.Universities.UniversityId;
 
 namespace AcademicManagement.Application.UseCases.Universities;
 

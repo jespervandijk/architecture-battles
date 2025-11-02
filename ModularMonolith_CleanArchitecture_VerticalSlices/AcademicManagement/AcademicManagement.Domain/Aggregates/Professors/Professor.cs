@@ -1,12 +1,15 @@
-using AcademicManagement.Domain.Departments;
-using AcademicManagement.Domain.Universities;
+using AcademicManagement.Domain.Aggregates.Departments;
+using AcademicManagement.Domain.Aggregates.Universities;
+using AcademicManagement.Domain.GeneralValueObjects.Users;
 using Qowaiv;
 
-namespace AcademicManagement.Domain.Professors;
+namespace AcademicManagement.Domain.Aggregates.Professors;
 
 public class Professor
 {
     public ProfessorId Id { get; private set; }
+
+    public User UserData { get; private set; }
 
     public string FirstName { get; private set; }
 

@@ -32,7 +32,12 @@ app.UseFastEndpoints();
 if (app.Environment.IsDevelopment())
 {
     app.UseOpenApi(c => c.Path = "/openapi/{documentName}.json");
-    app.MapScalarApiReference();
+    app.MapScalarApiReference(options => options
+    .AddPreferredSecuritySchemes("ApiKey")
+    .AddApiKeyAuthentication("ApiKey", apiKey =>
+    {
+        apiKey.Value = "api-key";
+    }));
 }
 
 app.UseHttpsRedirection();

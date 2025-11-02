@@ -1,7 +1,6 @@
-using System;
 using Vogen;
 
-namespace AcademicManagement.Domain.Courses;
+namespace AcademicManagement.Domain.Aggregates.Courses;
 
 [ValueObject<int>]
 public partial struct GradeWeight

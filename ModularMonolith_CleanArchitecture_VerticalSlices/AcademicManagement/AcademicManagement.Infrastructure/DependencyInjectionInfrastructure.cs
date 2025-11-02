@@ -17,6 +17,10 @@ public static class InfrastructureDependencyInjection
         }).UseLightweightSessions();
 
         services.AddTransient<ICourseRepository, CourseRepository>();
+        services.AddTransient<IPresidentRepository, PresidentRepository>();
+        services.AddTransient<IUserRepository, UserRepository>();
+        services.AddTransient<IUniversityRepository, UniversityRepository>();
+        services.AddTransient<IProfessorRepository, ProfessorRepository>();
 
         return services;
     }

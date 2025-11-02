@@ -1,4 +1,4 @@
-namespace AcademicManagement.Domain.Professors;
+namespace AcademicManagement.Domain.Aggregates.Professors;
 
 public enum Rank
 {

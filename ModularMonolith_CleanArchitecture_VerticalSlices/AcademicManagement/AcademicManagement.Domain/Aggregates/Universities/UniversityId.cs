@@ -1,6 +1,6 @@
 using Vogen;
 
-namespace AcademicManagement.Domain.Universities;
+namespace AcademicManagement.Domain.Aggregates.Universities;
 
 [ValueObject<Guid>]
 public partial struct UniversityId

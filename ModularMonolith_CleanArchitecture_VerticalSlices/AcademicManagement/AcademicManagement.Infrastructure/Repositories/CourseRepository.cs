@@ -1,5 +1,5 @@
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Domain.Courses;
+using AcademicManagement.Domain.Aggregates.Courses;
 using Marten;
 
 namespace AcademicManagement.Infrastructure.Repositories;

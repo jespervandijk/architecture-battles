@@ -1,6 +1,6 @@
-using AcademicManagement.Domain.Professors;
+using AcademicManagement.Domain.Aggregates.Professors;
 
-namespace AcademicManagement.Domain.Departments;
+namespace AcademicManagement.Domain.Aggregates.Departments;
 
 public record Department
 {
