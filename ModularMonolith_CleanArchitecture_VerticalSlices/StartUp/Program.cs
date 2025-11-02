@@ -6,9 +6,9 @@ using StartUp;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddAndConfigureAuthenication();
+builder.Services.AddAuthorizationPolicies();
+
 builder.Services
     .AddFastEndpoints(options =>
         {
@@ -21,22 +21,32 @@ builder.Services
             {
                 settings.SchemaSettings.TypeMappers.AddValueObjectTypeMappers();
                 settings.MarkNonNullablePropsAsRequired();
+                settings.AddSecurity(BasicRoleAuthOptions.SchemaName, new NSwag.OpenApiSecurityScheme
+                {
+                    Type = NSwag.OpenApiSecuritySchemeType.Basic,
+                    Name = "Authorization",
+                    In = NSwag.OpenApiSecurityApiKeyLocation.Header,
+                    Scheme = "basic",
+                    Description = "Input your username and password to access this API"
+                });
             };
     });
 builder.Services.AddServicesAllModules(builder.Configuration);
 
 var app = builder.Build();
 
-app.UseFastEndpoints();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseOpenApi(c => c.Path = "/openapi/{documentName}.json");
-    app.MapScalarApiReference(options => options
-    .AddPreferredSecuritySchemes(BasicRoleAuthOptions.DefaultScheme));
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseFastEndpoints();
 
 app.Run();

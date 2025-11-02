@@ -15,9 +15,9 @@ public static class Auth
 {
     public static IServiceCollection AddAndConfigureAuthenication(this IServiceCollection services)
     {
-        services.AddAuthentication(BasicRoleAuthOptions.DefaultScheme)
+        services.AddAuthentication()
             .AddScheme<BasicRoleAuthOptions, BasicRoleAuthHandler>(
-                BasicRoleAuthOptions.DefaultScheme, options =>
+                BasicRoleAuthOptions.SchemaName, options =>
                 {
                     options.PasswordToRole = new Dictionary<string, UserRole>
                     {
@@ -42,7 +42,7 @@ public static class Auth
 
 public class BasicRoleAuthOptions : AuthenticationSchemeOptions
 {
-    public const string DefaultScheme = "BasicRoleAuth";
+    public const string SchemaName = "BasicRoleAuth";
     public Dictionary<string, UserRole> PasswordToRole { get; set; } = [];
 }
 
@@ -65,10 +65,15 @@ public class BasicRoleAuthHandler : AuthenticationHandler<BasicRoleAuthOptions>
         var (username, password) = GetUsernameAndPasswordFromRequest(Request);
         var role = await DoesUserExist(username, password);
 
+        if (role is null)
+        {
+            return AuthenticateResult.Fail("Invalid Username or Password");
+        }
+
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Role, role.Value)
+            new Claim(ClaimTypes.Role, role.Value.Value)
         };
 
         var identity = new ClaimsIdentity(claims, Scheme.Name);
@@ -97,7 +102,7 @@ public class BasicRoleAuthHandler : AuthenticationHandler<BasicRoleAuthOptions>
         return (string.Empty, string.Empty);
     }
 
-    private async Task<UserRole> DoesUserExist(string username, string password)
+    private async Task<UserRole?> DoesUserExist(string username, string password)
     {
         Options.PasswordToRole.TryGetValue(password, out var expectedRole);
         var users = await _userRepository.GetAllUsers();
@@ -105,7 +110,7 @@ public class BasicRoleAuthHandler : AuthenticationHandler<BasicRoleAuthOptions>
 
         if (user is null)
         {
-            throw new UnauthorizedAccessException("Invalid username or password.");
+            return null;
         }
 
         return user.Role;
