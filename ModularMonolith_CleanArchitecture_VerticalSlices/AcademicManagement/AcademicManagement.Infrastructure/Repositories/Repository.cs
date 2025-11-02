@@ -42,4 +42,10 @@ public abstract class Repository<TEntity, TId> : IRepository<TEntity, TId>
         _documentSession.Insert(entity);
         await _documentSession.SaveChangesAsync();
     }
+
+    public async Task Upsert(TEntity entity)
+    {
+        _documentSession.Store(entity);
+        await _documentSession.SaveChangesAsync();
+    }
 }

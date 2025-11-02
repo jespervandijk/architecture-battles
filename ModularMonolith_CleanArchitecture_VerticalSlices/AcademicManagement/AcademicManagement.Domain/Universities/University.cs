@@ -1,6 +1,7 @@
 using AcademicManagement.Domain.Departments;
 using AcademicManagement.Domain.Presidents;
 using AcademicManagement.Domain.Professors;
+using AcademicManagement.Domain.Scalars;
 
 namespace AcademicManagement.Domain.Universities;
 
@@ -10,52 +11,27 @@ public class University
 
     public PresidentId President { get; private set; }
 
-    public string Name { get; set; }
+    public Name Name { get; set; }
 
-    // public List<Department> Departments { get; private set; }
+    public List<DepartmentId> Departments { get; private set; }
 
-    // public List<ProfessorId> Professors { get; private set; }
+    public List<ProfessorId> Professors { get; private set; }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     private University() { }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-    private University(PresidentId president, string name)
+    private University(PresidentId president, Name name)
     {
         Id = UniversityId.Next();
-        // Professors = [];
-        // Departments = [];
+        Professors = [];
+        Departments = [];
         President = president;
         Name = name;
     }
 
-    // public static University Create(PresidentId president, string name)
-    // {
-    //     return new University(president, name);
-    // }
-
-    // public void AddDepartment(string name, ProfessorId headOfDepartment)
-    // {
-    //     if (Departments.Exists(x => x.Name == name))
-    //     {
-    //         throw new ArgumentNullException("Department with this name already exists");
-    //     }
-    //     Departments.Add(Department.Create(name, headOfDepartment));
-    // }
-
-    // public void ChangeHeadOfDepartment(string name, ProfessorId headOfDepartment)
-    // {
-    //     Departments = [.. Departments.Select(department =>
-    //         {
-    //             if (department.Name == name){
-    //                 return department with { HeadOfDepartment = headOfDepartment };
-    //             }
-    //             return department;
-    //         })];
-    // }
-
-    // public void RemoveDepartment(string name)
-    // {
-    //     Departments = [.. Departments.Where(x => x.Name != name)];
-    // }
+    public static University Create(PresidentId president, Name name)
+    {
+        return new University(president, name);
+    }
 }

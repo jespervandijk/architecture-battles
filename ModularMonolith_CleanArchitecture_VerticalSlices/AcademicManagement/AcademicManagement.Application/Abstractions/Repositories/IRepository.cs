@@ -11,4 +11,6 @@ public interface IRepository<TEntity, TId>
     public Task Delete(TId id);
 
     public Task Create(TEntity entity);
+
+    public Task Upsert(TEntity entity);
 }
