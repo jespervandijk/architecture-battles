@@ -9,8 +9,7 @@ public class UserRepository : IUserRepository
     private readonly IPresidentRepository _presidentRepository;
     private readonly IProfessorRepository _professorRepository;
 
-    [JsonConstructor]
-    private UserRepository(IPresidentRepository presidentRepository, IProfessorRepository professorRepository)
+    public UserRepository(IPresidentRepository presidentRepository, IProfessorRepository professorRepository)
     {
         _presidentRepository = presidentRepository;
         _professorRepository = professorRepository;
