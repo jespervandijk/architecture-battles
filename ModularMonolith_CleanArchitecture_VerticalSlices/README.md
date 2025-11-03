@@ -1,0 +1,4 @@
+- unit of work pattern vs outbox pattern
+- domain logic seperation from application logic
+- integrations events vs domain events
+- public api vs messaging between modules
