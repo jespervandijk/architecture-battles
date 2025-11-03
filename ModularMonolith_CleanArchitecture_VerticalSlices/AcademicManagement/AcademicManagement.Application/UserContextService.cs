@@ -4,7 +4,12 @@ using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application;
 
-public class UserContextService
+public interface IUserContextService
+{
+    User GetCurrentUser();
+}
+
+public class UserContextService : IUserContextService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
