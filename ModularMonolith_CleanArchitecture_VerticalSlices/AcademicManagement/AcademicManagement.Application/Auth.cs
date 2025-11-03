@@ -38,6 +38,7 @@ public static class Auth
         {
             options.AddPolicy(PolicyAcademicManagement.PresidentOnly.Value, x => x.RequireRole(UserRole.President.Value));
             options.AddPolicy(PolicyAcademicManagement.AdminOnly.Value, x => x.RequireRole(UserRole.Admin.Value));
+            options.AddPolicy(PolicyAcademicManagement.ProfessorOnly.Value, x => x.RequireRole(UserRole.Professor.Value));
         });
         return services;
     }
@@ -54,7 +55,7 @@ public partial struct PolicyAcademicManagement
             return Validation.Invalid("Policy cannot be empty.");
         }
 
-        var allowedPolicies = new[] { "PresidentOnly", "AdminOnly" };
+        var allowedPolicies = new[] { "PresidentOnly", "AdminOnly", "ProfessorOnly" };
         if (Array.IndexOf(allowedPolicies, value) < 0)
         {
             return Validation.Invalid($"Policy '{value}' is not recognized.");
@@ -64,6 +65,7 @@ public partial struct PolicyAcademicManagement
     }
     public static PolicyAcademicManagement PresidentOnly => From("PresidentOnly");
     public static PolicyAcademicManagement AdminOnly => From("AdminOnly");
+    public static PolicyAcademicManagement ProfessorOnly => From("ProfessorOnly");
 }
 
 public class BasicRoleAuthOptions : AuthenticationSchemeOptions
