@@ -1,6 +1,6 @@
 using Vogen;
 
-namespace AcademicManagement.Domain.GeneralValueObjects.Users;
+namespace AcademicManagement.Domain.Aggregates.Users;
 
 [ValueObject<string>]
 public partial struct UserName

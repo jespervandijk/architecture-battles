@@ -8,7 +8,7 @@ public class DeleteUniversityEndpoint : Endpoint<DeleteUniversity, UniversityId>
 {
     public override void Configure()
     {
-        Delete("academic-management/university/delete");
+        Post("academic-management/university/delete");
         AllowAnonymous();
     }
 

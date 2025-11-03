@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="FastEndpoints" />
+    <PackageReference Include="Marten" />
   </ItemGroup>
 
 </Project>

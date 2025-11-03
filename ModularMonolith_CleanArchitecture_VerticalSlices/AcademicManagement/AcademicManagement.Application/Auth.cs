@@ -2,7 +2,8 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Domain.GeneralValueObjects.Users;
+using AcademicManagement.Domain.Aggregates.Users;
+using Marten;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,17 +64,18 @@ public class BasicRoleAuthHandler : AuthenticationHandler<BasicRoleAuthOptions>
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var (username, password) = GetUsernameAndPasswordFromRequest(Request);
-        var role = await DoesUserExist(username, password);
+        var user = await DoesUserExist(username, password);
 
-        if (role is null)
+        if (user is null)
         {
             return AuthenticateResult.Fail("Invalid Username or Password");
         }
 
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Role, role.Value.Value)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.Value.ToString()),
+            new Claim(ClaimTypes.Name, user.Name.Value),
+            new Claim(ClaimTypes.Role, user.Role.Value)
         };
 
         var identity = new ClaimsIdentity(claims, Scheme.Name);
@@ -102,17 +104,16 @@ public class BasicRoleAuthHandler : AuthenticationHandler<BasicRoleAuthOptions>
         return (string.Empty, string.Empty);
     }
 
-    private async Task<UserRole?> DoesUserExist(string username, string password)
+    private async Task<User> DoesUserExist(string username, string password)
     {
         Options.PasswordToRole.TryGetValue(password, out var expectedRole);
-        var users = await _userRepository.GetAllUsers();
-        var user = users.FirstOrDefault(u => u.Name.Value == username && u.Role == expectedRole);
+        var user = await _userRepository.Query().Where(x => x.Name.Value == username && x.Role == expectedRole).FirstOrDefaultAsync();
 
         if (user is null)
         {
             return null;
         }
 
-        return user.Role;
+        return user;
     }
 }

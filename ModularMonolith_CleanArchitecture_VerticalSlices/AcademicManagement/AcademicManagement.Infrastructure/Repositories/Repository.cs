@@ -1,5 +1,6 @@
 using AcademicManagement.Application.Abstractions.Repositories;
 using Marten;
+using Marten.Linq;
 
 namespace AcademicManagement.Infrastructure.Repositories;
 
@@ -18,6 +19,11 @@ public abstract class Repository<TEntity, TId> : IRepository<TEntity, TId>
     public async Task<IReadOnlyList<TEntity>> GetAll()
     {
         return await _documentSession.Query<TEntity>().ToListAsync(); ;
+    }
+
+    public IMartenQueryable<TEntity> Query()
+    {
+        return _documentSession.Query<TEntity>();
     }
 
     public async Task<TEntity> GetById(TId id)

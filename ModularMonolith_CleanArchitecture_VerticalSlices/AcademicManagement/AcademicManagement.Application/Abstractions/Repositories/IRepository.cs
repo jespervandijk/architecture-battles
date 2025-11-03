@@ -1,3 +1,5 @@
+using Marten.Linq;
+
 namespace AcademicManagement.Application.Abstractions.Repositories;
 
 public interface IRepository<TEntity, TId>
@@ -13,4 +15,6 @@ public interface IRepository<TEntity, TId>
     public Task Create(TEntity entity);
 
     public Task Upsert(TEntity entity);
+
+    public IMartenQueryable<TEntity> Query();
 }

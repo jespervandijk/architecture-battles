@@ -1,8 +1,7 @@
-using AcademicManagement.Domain.GeneralValueObjects.Users;
+using AcademicManagement.Domain.Aggregates.Users;
 
 namespace AcademicManagement.Application.Abstractions.Repositories;
 
-public interface IUserRepository
+public interface IUserRepository : IRepository<User, UserId>
 {
-    Task<List<User>> GetAllUsers();
 }

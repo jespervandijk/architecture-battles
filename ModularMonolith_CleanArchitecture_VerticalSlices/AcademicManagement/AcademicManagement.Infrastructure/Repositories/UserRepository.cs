@@ -1,30 +1,12 @@
-using System.Text.Json.Serialization;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Domain.GeneralValueObjects.Users;
+using AcademicManagement.Domain.Aggregates.Users;
+using Marten;
 
 namespace AcademicManagement.Infrastructure.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository : Repository<User, UserId>, IUserRepository
 {
-    private readonly IPresidentRepository _presidentRepository;
-    private readonly IProfessorRepository _professorRepository;
-
-    public UserRepository(IPresidentRepository presidentRepository, IProfessorRepository professorRepository)
+    public UserRepository(IDocumentSession documentSession) : base(documentSession)
     {
-        _presidentRepository = presidentRepository;
-        _professorRepository = professorRepository;
-    }
-
-    public async Task<List<User>> GetAllUsers()
-    {
-        var users = new List<User>();
-
-        var presidents = await _presidentRepository.GetAll();
-        users.AddRange(presidents.Select(p => p.UserData));
-
-        var professors = await _professorRepository.GetAll();
-        users.AddRange(professors.Select(p => p.UserData));
-
-        return users;
     }
 }
