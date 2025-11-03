@@ -1,3 +1,4 @@
+using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Infrastructure.Repositories;
 using Marten;
@@ -16,6 +17,7 @@ public static class InfrastructureDependencyInjection
             options.Connection(configuration.GetConnectionString("AcademicManagementDatabase"));
         }).UseLightweightSessions();
 
+        services.AddTransient<IUnitOfWork, UnitOfWork>();
         services.AddTransient<ICourseRepository, CourseRepository>();
         services.AddTransient<IPresidentRepository, PresidentRepository>();
         services.AddTransient<IUserRepository, UserRepository>();

@@ -16,7 +16,7 @@ public abstract class Repository<TEntity, TId> : IRepository<TEntity, TId>
         _documentSession = documentSession;
     }
 
-    public async Task<IReadOnlyList<TEntity>> GetAll()
+    public async Task<IReadOnlyList<TEntity>> GetAllAsync()
     {
         return await _documentSession.Query<TEntity>().ToListAsync(); ;
     }
@@ -26,32 +26,28 @@ public abstract class Repository<TEntity, TId> : IRepository<TEntity, TId>
         return _documentSession.Query<TEntity>();
     }
 
-    public async Task<TEntity> GetById(TId id)
+    public async Task<TEntity> GetByIdAsync(TId id)
     {
         return await _documentSession.LoadAsync<TEntity>(id) ?? throw new KeyNotFoundException($"Entity of type {typeof(TEntity).Name} with id {id} was not found.");
     }
 
-    public async Task Update(TEntity entity)
+    public void Update(TEntity entity)
     {
         _documentSession.Update(entity);
-        await _documentSession.SaveChangesAsync();
     }
 
-    public async Task Delete(TId id)
+    public void Delete(TId id)
     {
         _documentSession.Delete(id);
-        await _documentSession.SaveChangesAsync();
     }
 
-    public async Task Create(TEntity entity)
+    public void Insert(TEntity entity)
     {
         _documentSession.Insert(entity);
-        await _documentSession.SaveChangesAsync();
     }
 
-    public async Task Upsert(TEntity entity)
+    public void Upsert(TEntity entity)
     {
         _documentSession.Store(entity);
-        await _documentSession.SaveChangesAsync();
     }
 }

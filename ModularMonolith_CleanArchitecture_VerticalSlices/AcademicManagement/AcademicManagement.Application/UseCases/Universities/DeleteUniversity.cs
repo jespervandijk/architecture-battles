@@ -34,7 +34,7 @@ public class DeleteUniversityHandler : ICommandHandler<DeleteUniversity, Univers
 
     public async Task<UniversityId> ExecuteAsync(DeleteUniversity command, CancellationToken ct)
     {
-        await _universityRepository.Delete(command.UniversityId);
+        await _universityRepository.DeleteAsync(command.UniversityId);
         return command.UniversityId;
     }
 

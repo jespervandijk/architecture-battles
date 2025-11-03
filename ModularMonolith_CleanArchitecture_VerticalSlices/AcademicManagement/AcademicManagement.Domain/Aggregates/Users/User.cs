@@ -3,10 +3,10 @@ namespace AcademicManagement.Domain.Aggregates.Users;
 
 public record User
 {
-    public UserId Id { get; init; }
-    public UserName Name { get; init; }
+    public UserId Id { get; private set; }
+    public UserName Name { get; set; }
 
-    public UserRole Role { get; init; }
+    public UserRole Role { get; private set; }
 
     private User(UserId id, UserName name, UserRole role)
     {

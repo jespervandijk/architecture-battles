@@ -21,6 +21,6 @@ public class getAllCoursesEndpoint : EndpointWithoutRequest<IReadOnlyList<Course
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        Response = await _courseRepository.GetAll();
+        Response = await _courseRepository.GetAllAsync();
     }
 }
