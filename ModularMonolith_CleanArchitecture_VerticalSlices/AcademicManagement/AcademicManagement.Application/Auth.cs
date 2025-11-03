@@ -22,6 +22,7 @@ public static class Auth
                 {
                     options.PasswordToRole = new Dictionary<string, UserRole>
                     {
+                        // todo: hard coded passwords to appsettings at least
                         { "president_password", UserRole.President },
                         { "professor_password", UserRole.Professor }
                     };
@@ -35,6 +36,7 @@ public static class Auth
         services.AddAuthorization(options =>
         {
             options.AddPolicy("PresidentOnly", x => x.RequireRole(UserRole.President.Value));
+            options.AddPolicy("AdminOnly", x => x.RequireRole(UserRole.Admin.Value));
         });
         return services;
     }
@@ -64,6 +66,9 @@ public class BasicRoleAuthHandler : AuthenticationHandler<BasicRoleAuthOptions>
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var (username, password) = GetUsernameAndPasswordFromRequest(Request);
+
+        // todo: Hard coded admin check (with appsettings at least)
+
         var user = await DoesUserExist(username, password);
 
         if (user is null)
