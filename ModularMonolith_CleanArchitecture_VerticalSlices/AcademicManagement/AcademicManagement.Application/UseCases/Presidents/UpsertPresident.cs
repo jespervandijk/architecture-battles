@@ -23,7 +23,7 @@ public class UpsertPresidentEndpoint : Endpoint<UpsertPresident, PresidentId>
 
 public record UpsertPresident : ICommand<PresidentId>
 {
-    public PresidentId? Id { get; init; }
+    public PresidentId? ExistingPresidentId { get; init; }
     public required Name FirstName { get; init; }
     public required Name LastName { get; init; }
     public required UserName UserName { get; init; }
@@ -44,12 +44,12 @@ public class UpsertPresidentHandler : ICommandHandler<UpsertPresident, President
 
     public async Task<PresidentId> ExecuteAsync(UpsertPresident command, CancellationToken ct)
     {
-        if (command.Id is not null)
+        if (command.ExistingPresidentId is not null)
         {
-            var existingPresident = await _presidentRepository.GetByIdAsync(command.Id.Value);
+            var existingPresident = await _presidentRepository.GetByIdAsync(command.ExistingPresidentId.Value);
             if (existingPresident is null)
             {
-                throw new ArgumentException($"President with id {command.Id} was not found.");
+                throw new ArgumentException($"President with id {command.ExistingPresidentId} was not found.");
             }
             var existingUser = await _userRepository.GetByIdAsync(existingPresident.UserId);
             if (existingUser is null)
