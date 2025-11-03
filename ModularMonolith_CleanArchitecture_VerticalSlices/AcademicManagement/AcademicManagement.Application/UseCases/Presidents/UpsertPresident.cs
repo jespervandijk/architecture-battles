@@ -12,6 +12,7 @@ public class UpsertPresidentEndpoint : Endpoint<UpsertPresident, PresidentId>
     public override void Configure()
     {
         Post("academic-management/presidents/upsert");
+        Policies(PolicyAcademicManagement.AdminOnly.Value);
     }
 
     public override Task HandleAsync(UpsertPresident req, CancellationToken ct)

@@ -21,7 +21,7 @@ public partial struct UserRole
 
         return Validation.Ok;
     }
-    public static UserRole Admin = new("Admin");
-    public static UserRole President = new("President");
-    public static UserRole Professor = new("Professor");
+    public static UserRole Admin => From("Admin");
+    public static UserRole President => From("President");
+    public static UserRole Professor => From("Professor");
 }

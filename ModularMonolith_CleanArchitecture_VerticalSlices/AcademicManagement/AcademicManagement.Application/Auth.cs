@@ -9,12 +9,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Vogen;
 
 namespace AcademicManagement.Application;
 
 public static class Auth
 {
-    public static IServiceCollection AddAndConfigureAuthenication(this IServiceCollection services)
+    public static IServiceCollection AuthenticationAcademicManagement(this IServiceCollection services)
     {
         services.AddAuthentication()
             .AddScheme<BasicRoleAuthOptions, BasicRoleAuthHandler>(
@@ -31,16 +32,38 @@ public static class Auth
         return services;
     }
 
-    public static IServiceCollection AddAuthorizationPolicies(this IServiceCollection services)
+    public static IServiceCollection AuthorizationAcademicManagement(this IServiceCollection services)
     {
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("PresidentOnly", x => x.RequireRole(UserRole.President.Value));
-            options.AddPolicy("AdminOnly", x => x.RequireRole(UserRole.Admin.Value));
+            options.AddPolicy(PolicyAcademicManagement.PresidentOnly.Value, x => x.RequireRole(UserRole.President.Value));
+            options.AddPolicy(PolicyAcademicManagement.AdminOnly.Value, x => x.RequireRole(UserRole.Admin.Value));
         });
         return services;
     }
 
+}
+
+[ValueObject<string>]
+public partial struct PolicyAcademicManagement
+{
+    private static Validation Validate(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return Validation.Invalid("Policy cannot be empty.");
+        }
+
+        var allowedPolicies = new[] { "PresidentOnly", "AdminOnly" };
+        if (Array.IndexOf(allowedPolicies, value) < 0)
+        {
+            return Validation.Invalid($"Policy '{value}' is not recognized.");
+        }
+
+        return Validation.Ok;
+    }
+    public static PolicyAcademicManagement PresidentOnly => From("PresidentOnly");
+    public static PolicyAcademicManagement AdminOnly => From("AdminOnly");
 }
 
 public class BasicRoleAuthOptions : AuthenticationSchemeOptions

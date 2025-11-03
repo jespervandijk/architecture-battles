@@ -6,8 +6,8 @@ using StartUp;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAndConfigureAuthenication();
-builder.Services.AddAuthorizationPolicies();
+builder.Services.AuthenticationAcademicManagement();
+builder.Services.AuthorizationAcademicManagement();
 
 builder.Services
     .AddFastEndpoints(options =>
