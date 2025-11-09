@@ -5,33 +5,29 @@ using AcademicManagement.Domain.Scalars;
 
 namespace AcademicManagement.Domain.Aggregates.Universities;
 
-public class University
+public sealed class University
 {
-    public UniversityId Id { get; private set; }
+    public UniversityId Id { get; init; }
 
-    public PresidentId President { get; private set; }
+    public PresidentId President { get; set; }
 
     public Name Name { get; set; }
 
-    public List<DepartmentId> Departments { get; private set; }
+    public List<DepartmentId> Departments { get; set; }
 
-    public List<ProfessorId> Professors { get; private set; }
+    public List<ProfessorId> Professors { get; set; }
 
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    private University() { }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-
-    private University(PresidentId president, Name name)
+    private University(UniversityId id, PresidentId president, Name name, List<DepartmentId> departments, List<ProfessorId> professors)
     {
-        Id = UniversityId.Next();
-        Professors = [];
-        Departments = [];
+        Id = id;
         President = president;
         Name = name;
+        Departments = departments;
+        Professors = professors;
     }
 
     public static University Create(PresidentId president, Name name)
     {
-        return new University(president, name);
+        return new University(UniversityId.Next(), president, name, [], []);
     }
 }
