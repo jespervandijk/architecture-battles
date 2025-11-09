@@ -59,7 +59,7 @@ public class CreateCourseHandler : ICommandHandler<CreateCourse, CourseId>
             command.Credits,
             command.MaxCapacity,
             command.Status);
-        await _courseRepository.Insert(course);
+        _courseRepository.Insert(course);
         return course.Id;
     }
 }

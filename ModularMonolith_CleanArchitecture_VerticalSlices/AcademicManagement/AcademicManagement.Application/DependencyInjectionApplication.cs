@@ -6,7 +6,7 @@ public static class DependencyInjectionApplication
 {
     public static IServiceCollection AddFromAcademicManagementApplication(this IServiceCollection services)
     {
-        services.AddTransient<IUserContextService, UserContextService>();
+        services.AddScoped<IUserContextService, UserContextService>();
         return services;
     }
 }

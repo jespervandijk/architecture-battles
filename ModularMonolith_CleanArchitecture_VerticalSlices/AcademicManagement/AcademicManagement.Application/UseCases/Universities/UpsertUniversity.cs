@@ -42,7 +42,7 @@ public class UpsertUniversityHandler : ICommandHandler<UpsertUniversity, Univers
     public async Task<UniversityId> ExecuteAsync(UpsertUniversity command, CancellationToken ct)
     {
         var university = University.Create(command.President, command.Name);
-        await _universityRepository.Upsert(university);
+        _universityRepository.Upsert(university);
         return university.Id;
     }
 
