@@ -9,25 +9,15 @@ namespace AcademicManagement.Domain.Aggregates.Courses;
 public sealed class Course
 {
     public CourseId Id { get; init; }
-
     public UniversityId University { get; set; }
-
     public DepartmentId Department { get; set; }
-
     public ProfessorId CourseOwner { get; set; }
-
     public List<ProfessorId> Professors { get; set; }
-
     public Name Title { get; set; }
-
     public Description? Description { get; set; }
-
     public Credits Credits { get; set; }
-
     public StudentCapacity? MaxCapacity { get; set; }
-
     public CourseStatus Status { get; set; }
-
     public List<Section> Sections { get; set; }
 
     [JsonConstructor]
