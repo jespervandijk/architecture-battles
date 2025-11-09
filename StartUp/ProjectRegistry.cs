@@ -2,7 +2,6 @@ using System.Reflection;
 using AcademicManagement.Application;
 using AcademicManagement.Infrastructure;
 using StudentEnrollment.Application;
-using StudentEnrollment.Domain;
 using StudentEnrollment.Infrastructure;
 using Vogen;
 
@@ -43,4 +42,8 @@ public static class ProjectRegistry
             .Any(attr => attr.GetType().IsGenericType &&
                         attr.GetType().GetGenericTypeDefinition() == typeof(TAttribute).GetGenericTypeDefinition());
     }
+}
+
+internal class DependencyInjectionDomain
+{
 }
