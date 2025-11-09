@@ -3,7 +3,7 @@ using Vogen;
 namespace AcademicManagement.Domain.Scalars;
 
 [ValueObject<string>]
-public partial struct Name
+public readonly partial struct Name
 {
     private static Validation Validate(string name)
     {

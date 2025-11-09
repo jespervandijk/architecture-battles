@@ -1,7 +1,12 @@
+using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Courses;
+using AcademicManagement.Domain.Aggregates.Departments;
+using AcademicManagement.Domain.Aggregates.Professors;
+using AcademicManagement.Domain.Aggregates.Universities;
+using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
-using Qowaiv;
+using FluentValidation;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -10,7 +15,7 @@ public class CreateCourseEndpoint : Endpoint<CreateCourse, CourseId>
 {
     public override void Configure()
     {
-        Post("api/academic-management/course/create");
+        Post("academic-management/course/create");
         AllowAnonymous();
     }
 
@@ -22,44 +27,45 @@ public class CreateCourseEndpoint : Endpoint<CreateCourse, CourseId>
 
 public record CreateCourse : ICommand<CourseId>
 {
-    public required Year Year { get; init; }
-
-    public required string Title { get; init; }
-
-    public required string Description { get; init; }
-
+    public required UniversityId UniversityId { get; init; }
+    public required DepartmentId DepartmentId { get; init; }
+    public required ProfessorId CourseOwner { get; init; }
+    public required Name Title { get; init; }
+    public Description? Description { get; init; }
     public required Credits Credits { get; init; }
+    public StudentCapacity? MaxCapacity { get; init; }
+}
 
-    public required int MaxCapacity { get; init; }
+public class CreateCourseHandler : ICommandHandler<CreateCourse, CourseId>
+{
+    private readonly ICourseRepository _courseRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public required CourseStatus Status { get; init; }
+    public CreateCourseHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork)
+    {
+        _courseRepository = courseRepository;
+        _unitOfWork = unitOfWork;
+    }
+    public async Task<CourseId> ExecuteAsync(CreateCourse command, CancellationToken ct)
+    {
+        var course = Course.Create(command.UniversityId,
+            command.DepartmentId,
+            command.CourseOwner,
+            command.Title,
+            command.Credits,
+            command.Description,
+            command.MaxCapacity);
+        _courseRepository.Insert(course);
+        await _unitOfWork.SaveChangesAsync();
+        return course.Id;
+    }
 }
 
 public class CreateCourseValidator : Validator<CreateCourse>
 {
     public CreateCourseValidator()
     {
-
-    }
-}
-
-public class CreateCourseHandler : ICommandHandler<CreateCourse, CourseId>
-{
-    private readonly ICourseRepository _courseRepository;
-
-    public CreateCourseHandler(ICourseRepository courseRepository)
-    {
-        _courseRepository = courseRepository;
-    }
-    public async Task<CourseId> ExecuteAsync(CreateCourse command, CancellationToken ct)
-    {
-        var course = Course.Create(
-            command.Title,
-            command.Description,
-            command.Credits,
-            command.MaxCapacity,
-            command.Status);
-        _courseRepository.Insert(course);
-        return course.Id;
+        _ = RuleFor(x => x.Title).NotEmpty();
+        _ = RuleFor(x => x.Credits).Must(c => c.Value > 0).WithMessage("Credits must be greater than zero.");
     }
 }

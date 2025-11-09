@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Universities;
+using AcademicManagement.Domain.Scalars;
 
 namespace AcademicManagement.Domain.Aggregates.Courses;
 
@@ -17,13 +18,13 @@ public sealed class Course
 
     public List<ProfessorId> Professors { get; set; }
 
-    public string Title { get; set; }
+    public Name Title { get; set; }
 
-    public string? Description { get; set; }
+    public Description? Description { get; set; }
 
     public Credits Credits { get; set; }
 
-    public int? MaxCapacity { get; set; }
+    public StudentCapacity? MaxCapacity { get; set; }
 
     public CourseStatus Status { get; set; }
 
@@ -36,10 +37,10 @@ public sealed class Course
         DepartmentId department,
         ProfessorId courseOwner,
         List<ProfessorId> professors,
-        string title,
-        string? description,
+        Name title,
+        Description? description,
         Credits credits,
-        int? maxCapacity,
+        StudentCapacity? maxCapacity,
         CourseStatus status,
         List<Section> sections
         )
@@ -61,10 +62,10 @@ public sealed class Course
         UniversityId university,
         DepartmentId department,
         ProfessorId courseOwner,
-        string title,
+        Name title,
         Credits credits,
-        string? description = null,
-        int? maxCapacity = null
+        Description? description = null,
+        StudentCapacity? maxCapacity = null
     )
     {
         return new Course(

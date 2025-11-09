@@ -10,10 +10,10 @@ public sealed class Section
     public ProfessorId Professor { get; internal set; }
     public List<Assignment> Assignments { get; internal set; }
     public List<Exam> Exams { get; internal set; }
-    public string? TeachingMaterialsUrl { get; internal set; }
+    public Uri? TeachingMaterialsUrl { get; internal set; }
 
     [JsonConstructor]
-    private Section(SectionId id, string name, ProfessorId professor, List<Assignment> assignments, List<Exam> exams, string? teachingMaterialsUrl)
+    private Section(SectionId id, string name, ProfessorId professor, List<Assignment> assignments, List<Exam> exams, Uri? teachingMaterialsUrl)
     {
         Id = id;
         Name = name;
@@ -23,7 +23,7 @@ public sealed class Section
         TeachingMaterialsUrl = teachingMaterialsUrl;
     }
 
-    public static Section Create(string name, ProfessorId professor, string? teachingMaterialsUrl = null)
+    public static Section Create(string name, ProfessorId professor, Uri? teachingMaterialsUrl = null)
     {
         return new Section(
             SectionId.Next(),
