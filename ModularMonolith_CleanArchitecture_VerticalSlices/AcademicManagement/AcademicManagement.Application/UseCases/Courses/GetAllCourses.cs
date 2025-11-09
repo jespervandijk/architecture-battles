@@ -4,11 +4,11 @@ using FastEndpoints;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
-public class getAllCoursesEndpoint : EndpointWithoutRequest<IReadOnlyList<Course>>
+public class GetAllCoursesEndpoint : EndpointWithoutRequest<IReadOnlyList<Course>>
 {
     private readonly ICourseRepository _courseRepository;
 
-    public getAllCoursesEndpoint(ICourseRepository courseRepository)
+    public GetAllCoursesEndpoint(ICourseRepository courseRepository)
     {
         _courseRepository = courseRepository;
     }
@@ -23,4 +23,9 @@ public class getAllCoursesEndpoint : EndpointWithoutRequest<IReadOnlyList<Course
     {
         Response = await _courseRepository.GetAllAsync();
     }
+}
+
+public record GetCourses : ICommand<IReadOnlyList<Course>>
+{
+
 }

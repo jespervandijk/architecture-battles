@@ -1,5 +1,4 @@
 using Qowaiv;
-using StudentEnrollment.Domain.Enrollments;
 
 namespace StudentEnrollment.Domain.Courses;
 

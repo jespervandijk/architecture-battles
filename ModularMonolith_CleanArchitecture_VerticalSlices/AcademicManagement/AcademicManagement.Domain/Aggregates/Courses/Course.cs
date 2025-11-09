@@ -5,9 +5,9 @@ using AcademicManagement.Domain.Aggregates.Universities;
 
 namespace AcademicManagement.Domain.Aggregates.Courses;
 
-public class Course
+public sealed class Course
 {
-    public CourseId Id { get; private set; }
+    public CourseId Id { get; init; }
 
     public UniversityId University { get; set; }
 
@@ -17,33 +17,68 @@ public class Course
 
     public List<ProfessorId> Professors { get; set; }
 
-    public string Title { get; private set; }
+    public string Title { get; set; }
 
-    public string Description { get; private set; }
+    public string? Description { get; set; }
 
-    public Credits Credits { get; private set; }
+    public Credits Credits { get; set; }
 
-    public int MaxCapacity { get; private set; }
+    public int? MaxCapacity { get; set; }
 
-    public CourseStatus Status { get; private set; }
+    public CourseStatus Status { get; set; }
 
     public List<Section> Sections { get; set; }
 
     [JsonConstructor]
-    private Course() { }
-
-    private Course(string title, string description, Credits credits, int maxCapacity, CourseStatus status)
+    private Course(
+        CourseId id,
+        UniversityId university,
+        DepartmentId department,
+        ProfessorId courseOwner,
+        List<ProfessorId> professors,
+        string title,
+        string? description,
+        Credits credits,
+        int? maxCapacity,
+        CourseStatus status,
+        List<Section> sections
+        )
     {
-        Id = CourseId.Next();
+        Id = id;
+        University = university;
+        Department = department;
+        CourseOwner = courseOwner;
+        Professors = professors;
         Title = title;
         Description = description;
         Credits = credits;
         MaxCapacity = maxCapacity;
         Status = status;
+        Sections = sections;
     }
 
-    public static Course Create(string title, string description, Credits credits, int maxCapacity, CourseStatus status)
+    public static Course Create(
+        UniversityId university,
+        DepartmentId department,
+        ProfessorId courseOwner,
+        string title,
+        Credits credits,
+        string? description = null,
+        int? maxCapacity = null
+    )
     {
-        return new Course(title, description, credits, maxCapacity, status);
+        return new Course(
+            CourseId.Next(),
+            university,
+            department,
+            courseOwner,
+            [],
+            title,
+            description,
+            credits,
+            maxCapacity,
+            CourseStatus.Active,
+            []
+        );
     }
 }
