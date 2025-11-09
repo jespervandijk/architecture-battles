@@ -13,7 +13,7 @@ public partial struct UserRole
             return Validation.Invalid("Role cannot be empty.");
         }
 
-        var allowedRoles = new[] { "Admin", "President", "Teacher" };
+        var allowedRoles = new[] { "Admin", "President", "Professor" };
         if (Array.IndexOf(allowedRoles, value) < 0)
         {
             return Validation.Invalid($"Role '{value}' is not recognized.");
