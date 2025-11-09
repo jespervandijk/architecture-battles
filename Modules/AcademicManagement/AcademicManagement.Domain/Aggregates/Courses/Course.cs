@@ -18,6 +18,7 @@ public sealed class Course
     public Credits Credits { get; set; }
     public StudentCapacity? MaxCapacity { get; set; }
     public CourseStatus Status { get; set; }
+    public bool IsArchived { get; set; }
     public List<Section> Sections { get; set; }
 
     [JsonConstructor]
@@ -32,6 +33,7 @@ public sealed class Course
         Credits credits,
         StudentCapacity? maxCapacity,
         CourseStatus status,
+        bool isArchived,
         List<Section> sections
         )
     {
@@ -45,6 +47,7 @@ public sealed class Course
         Credits = credits;
         MaxCapacity = maxCapacity;
         Status = status;
+        IsArchived = isArchived;
         Sections = sections;
     }
 
@@ -69,7 +72,13 @@ public sealed class Course
             credits,
             maxCapacity,
             CourseStatus.Active,
+            false,
             []
         );
+    }
+
+    public void Archive()
+    {
+        IsArchived = true;
     }
 }
