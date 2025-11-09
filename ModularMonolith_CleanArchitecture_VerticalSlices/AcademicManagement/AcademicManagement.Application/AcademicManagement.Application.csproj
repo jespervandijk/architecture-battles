@@ -15,4 +15,8 @@
     <PackageReference Include="Marten" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Dtos\" />
+  </ItemGroup>
+
 </Project>
