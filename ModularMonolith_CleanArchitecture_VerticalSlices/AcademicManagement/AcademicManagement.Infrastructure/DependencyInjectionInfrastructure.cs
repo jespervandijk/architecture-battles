@@ -12,19 +12,19 @@ public static class InfrastructureDependencyInjection
 
     public static IServiceCollection AddFromAcademicManagementInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddMarten(options =>
+        _ = services.AddMarten(options =>
         {
-            options.Connection(configuration.GetConnectionString("AcademicManagementDatabase"));
+            options.Connection(configuration.GetConnectionString("Marten")!);
+            options.UseSystemTextJsonForSerialization(enumStorage: Weasel.Core.EnumStorage.AsString);
         }).UseLightweightSessions();
 
-        services.AddTransient<IUnitOfWork, UnitOfWork>();
-        services.AddTransient<ICourseRepository, CourseRepository>();
-        services.AddTransient<IPresidentRepository, PresidentRepository>();
-        services.AddTransient<IUserRepository, UserRepository>();
-        services.AddTransient<IUniversityRepository, UniversityRepository>();
-        services.AddTransient<IProfessorRepository, ProfessorRepository>();
-
-        return services;
+        return services
+            .AddScoped<IUnitOfWork, UnitOfWork>()
+            .AddScoped<ICourseRepository, CourseRepository>()
+            .AddScoped<IPresidentRepository, PresidentRepository>()
+            .AddScoped<IUserRepository, UserRepository>()
+            .AddScoped<IUniversityRepository, UniversityRepository>()
+            .AddScoped<IProfessorRepository, ProfessorRepository>();
     }
 
 }

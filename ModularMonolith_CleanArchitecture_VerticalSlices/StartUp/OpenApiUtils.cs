@@ -7,7 +7,7 @@ namespace StartUp;
 
 public static class OpenApiUtils
 {
-    public static ICollection<ITypeMapper> AddValueObjectTypeMappers(this ICollection<ITypeMapper> typeMappers)
+    public static void AddValueObjectTypeMappers(this ICollection<ITypeMapper> typeMappers)
     {
         foreach (var valueObject in ProjectRegistry.GetValueObjects())
         {
@@ -19,10 +19,13 @@ public static class OpenApiUtils
                 continue;
             }
 
-            typeMappers.Add(new PrimitiveTypeMapper(valueObject, schema => schema.PrimitiveBasedJsonSchema(attributeType.GenericTypeArguments[0])));
-        }
+            var innerType = attributeType.GenericTypeArguments[0];
 
-        return typeMappers;
+            typeMappers.Add(new PrimitiveTypeMapper(valueObject, schema => schema.PrimitiveBasedJsonSchema(innerType)));
+
+            var nullableVo = typeof(Nullable<>).MakeGenericType(valueObject);
+            typeMappers.Add(new PrimitiveTypeMapper(nullableVo, schema => schema.PrimitiveBasedJsonSchema(innerType)));
+        }
     }
 
     private static JsonSchema PrimitiveBasedJsonSchema(this JsonSchema schema, Type type)

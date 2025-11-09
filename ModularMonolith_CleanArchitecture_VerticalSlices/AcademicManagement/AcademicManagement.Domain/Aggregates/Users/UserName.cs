@@ -3,7 +3,7 @@ using Vogen;
 namespace AcademicManagement.Domain.Aggregates.Users;
 
 [ValueObject<string>]
-public partial struct UserName
+public readonly partial struct UserName
 {
     private static Validation Validate(string name)
     {
@@ -12,11 +12,6 @@ public partial struct UserName
             return Validation.Invalid("UserName cannot be empty.");
         }
 
-        if (name.Length > 20)
-        {
-            return Validation.Invalid("UserName cannot exceed 20 characters.");
-        }
-
-        return Validation.Ok;
+        return name.Length > 20 ? Validation.Invalid("UserName cannot exceed 20 characters.") : Validation.Ok;
     }
 }

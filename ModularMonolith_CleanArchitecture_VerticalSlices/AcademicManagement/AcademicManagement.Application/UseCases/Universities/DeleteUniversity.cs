@@ -14,7 +14,7 @@ public class DeleteUniversityEndpoint : Endpoint<DeleteUniversity, UniversityId>
 
     public override async Task HandleAsync(DeleteUniversity req, CancellationToken ct)
     {
-        var result = await req.ExecuteAsync();
+        var result = await req.ExecuteAsync(ct);
         Response = result;
     }
 }

@@ -15,7 +15,7 @@ public class CreateCourseEndpoint : Endpoint<CreateCourse, CourseId>
 
     public override async Task HandleAsync(CreateCourse req, CancellationToken ct)
     {
-        Response = await req.ExecuteAsync();
+        Response = await req.ExecuteAsync(ct);
     }
 }
 

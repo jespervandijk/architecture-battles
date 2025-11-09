@@ -4,7 +4,7 @@ namespace AcademicManagement.Domain.Aggregates.Users;
 
 
 [ValueObject<string>]
-public partial struct UserRole
+public readonly partial struct UserRole
 {
     private static Validation Validate(string value)
     {
@@ -14,12 +14,7 @@ public partial struct UserRole
         }
 
         var allowedRoles = new[] { "Admin", "President", "Professor" };
-        if (Array.IndexOf(allowedRoles, value) < 0)
-        {
-            return Validation.Invalid($"Role '{value}' is not recognized.");
-        }
-
-        return Validation.Ok;
+        return Array.IndexOf(allowedRoles, value) < 0 ? Validation.Invalid($"Role '{value}' is not recognized.") : Validation.Ok;
     }
     public static UserRole Admin => From("Admin");
     public static UserRole President => From("President");

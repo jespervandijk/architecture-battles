@@ -1,0 +1,57 @@
+# Root-level configuration
+root = true
+
+# Default file settings for C#
+[*.cs]
+
+# --- Analyzer Configuration ---
+# Global Severity for .NET Analyzers
+dotnet_analyzer_diagnostic.severity = warning
+
+# Specific Analyzer Rules for unused return values
+# SonarAnalyzer.CSharp - Objects should not be created to be dropped immediately without being used
+dotnet_diagnostic.S1848.severity = warning
+
+# Microsoft.CodeAnalysis.NetAnalyzers - Return value of method is not used
+# This one can be quite broad, consider if you want it or prefer S1848
+dotnet_diagnostic.CA1806.severity = warning
+
+# Roslynator - Unused parameter
+# This one might not directly apply to unused return values, but helps with general cleanliness
+dotnet_diagnostic.RCS1163.severity = warning
+
+# IDE0008: Use explicit type
+dotnet_diagnostic.IDE0008.severity = none
+
+# IDE0290: Use primary constructor
+dotnet_diagnostic.IDE0290.severity = none
+
+# IDE0160: Convert to block scoped namespace
+dotnet_diagnostic.IDE0160.severity = none
+
+# CA2208: Instantiate argument exceptions correctly
+dotnet_diagnostic.CA2208.severity = none
+
+# AddNormalizeInputMethod: Value Objects can have a method that normalizes (sanitizes) input
+dotnet_diagnostic.AddNormalizeInputMethod.severity = none
+
+# S1210: "Equals" and the comparison operators should be overridden when implementing "IComparable"
+dotnet_diagnostic.S1210.severity = none
+
+# IDE0022: Use block body for method
+dotnet_diagnostic.IDE0022.severity = none
+
+# RCS1170: Use read-only auto-implemented property
+dotnet_diagnostic.RCS1170.severity = none
+
+# AddValidationMethod: Value Objects can have validation
+dotnet_diagnostic.AddValidationMethod.severity = none
+
+# CA1848: Use the LoggerMessage delegates
+dotnet_diagnostic.CA1848.severity = none
+
+# CA2254: Template should be a static expression
+dotnet_diagnostic.CA2254.severity = none
+
+# RCS1161: Enum should declare explicit values
+dotnet_diagnostic.RCS1161.severity = none

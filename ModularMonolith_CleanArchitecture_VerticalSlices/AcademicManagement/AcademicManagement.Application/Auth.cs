@@ -115,9 +115,9 @@ public class BasicRoleAuthHandler : AuthenticationHandler<BasicRoleAuthOptions>
         return AuthenticateResult.Success(ticket);
     }
 
-    private (string Username, string Password) GetUsernameAndPasswordFromRequest(HttpRequest request)
+    private static (string Username, string Password) GetUsernameAndPasswordFromRequest(HttpRequest request)
     {
-        var authHeader = request.Headers["Authorization"].ToString();
+        var authHeader = request.Headers.Authorization.ToString();
         if (AuthenticationHeaderValue.TryParse(authHeader, out var headerValue))
         {
             if (headerValue.Scheme.Equals("Basic", StringComparison.OrdinalIgnoreCase))
@@ -134,16 +134,13 @@ public class BasicRoleAuthHandler : AuthenticationHandler<BasicRoleAuthOptions>
         return (string.Empty, string.Empty);
     }
 
-    private async Task<User> DoesUserExist(string username, string password)
+    private async Task<User?> DoesUserExist(string username, string password)
     {
-        Options.PasswordToRole.TryGetValue(password, out var expectedRole);
-        var user = await _userRepository.Query().Where(x => x.Name.Value == username && x.Role == expectedRole).FirstOrDefaultAsync();
+        _ = Options.PasswordToRole.TryGetValue(password, out var expectedRole);
+        var allUsers = await _userRepository.GetAllAsync();
+        return allUsers
+            .FirstOrDefault(u => u.Name.Value.Equals(username, StringComparison.OrdinalIgnoreCase)
+                && u.Role == expectedRole);
 
-        if (user is null)
-        {
-            return null;
-        }
-
-        return user;
     }
 }

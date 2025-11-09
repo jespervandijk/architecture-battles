@@ -20,7 +20,7 @@ builder.Services
             {
                 settings.SchemaSettings.TypeMappers.AddValueObjectTypeMappers();
                 settings.MarkNonNullablePropsAsRequired();
-                settings.AddSecurity(BasicRoleAuthOptions.SchemaName, new NSwag.OpenApiSecurityScheme
+                _ = settings.AddSecurity(BasicRoleAuthOptions.SchemaName, new NSwag.OpenApiSecurityScheme
                 {
                     Type = NSwag.OpenApiSecuritySchemeType.Basic,
                     Name = "Authorization",

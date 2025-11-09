@@ -16,7 +16,7 @@ public class UpsertUniversityEndpoint : Endpoint<UpsertUniversity, UniversityId>
 
     public override async Task HandleAsync(UpsertUniversity req, CancellationToken ct)
     {
-        var result = await req.ExecuteAsync();
+        var result = await req.ExecuteAsync(ct);
         Response = result;
     }
 }
