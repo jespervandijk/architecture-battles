@@ -1,0 +1,76 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartUp", "StartUp\StartUp.csproj", "{76472F31-718B-5A4B-8065-983B2AA5409D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{CA253913-39DE-BFD0-C9A3-4B7EC6FBDF17}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StudentEnrollment", "StudentEnrollment", "{5FE1A8E1-909B-1A07-D5F5-80363C1D89A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentEnrollment.Infrastructure", "Modules\StudentEnrollment\StudentEnrollment.Infrastructure\StudentEnrollment.Infrastructure.csproj", "{5D17DAD5-5BCD-2D4B-9299-32DF3D66B299}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentEnrollment.Application", "Modules\StudentEnrollment\StudentEnrollment.Application\StudentEnrollment.Application.csproj", "{435023D0-7155-0A5E-85CF-B02DA5C1E98E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentEnrollment.Domain", "Modules\StudentEnrollment\StudentEnrollment.Domain\StudentEnrollment.Domain.csproj", "{438BBCEA-0597-44A7-8493-BD399FCCCB55}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AcademicManagement", "AcademicManagement", "{2FD67E0D-625D-2495-AC08-700CC4E90F33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcademicManagement.Application", "Modules\AcademicManagement\AcademicManagement.Application\AcademicManagement.Application.csproj", "{EDBBBD0E-29CB-EA17-1781-D68465E9E616}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcademicManagement.Domain", "Modules\AcademicManagement\AcademicManagement.Domain\AcademicManagement.Domain.csproj", "{365542FA-A25F-CED6-45E5-CBA16F4F12C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcademicManagement.Infrastructure", "Modules\AcademicManagement\AcademicManagement.Infrastructure\AcademicManagement.Infrastructure.csproj", "{CB07C0CE-B4B8-3EE4-BA2C-784F2F0B9BB5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{76472F31-718B-5A4B-8065-983B2AA5409D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76472F31-718B-5A4B-8065-983B2AA5409D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76472F31-718B-5A4B-8065-983B2AA5409D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76472F31-718B-5A4B-8065-983B2AA5409D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D17DAD5-5BCD-2D4B-9299-32DF3D66B299}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D17DAD5-5BCD-2D4B-9299-32DF3D66B299}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D17DAD5-5BCD-2D4B-9299-32DF3D66B299}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D17DAD5-5BCD-2D4B-9299-32DF3D66B299}.Release|Any CPU.Build.0 = Release|Any CPU
+		{435023D0-7155-0A5E-85CF-B02DA5C1E98E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{435023D0-7155-0A5E-85CF-B02DA5C1E98E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{435023D0-7155-0A5E-85CF-B02DA5C1E98E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{435023D0-7155-0A5E-85CF-B02DA5C1E98E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{438BBCEA-0597-44A7-8493-BD399FCCCB55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{438BBCEA-0597-44A7-8493-BD399FCCCB55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{438BBCEA-0597-44A7-8493-BD399FCCCB55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{438BBCEA-0597-44A7-8493-BD399FCCCB55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDBBBD0E-29CB-EA17-1781-D68465E9E616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDBBBD0E-29CB-EA17-1781-D68465E9E616}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDBBBD0E-29CB-EA17-1781-D68465E9E616}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDBBBD0E-29CB-EA17-1781-D68465E9E616}.Release|Any CPU.Build.0 = Release|Any CPU
+		{365542FA-A25F-CED6-45E5-CBA16F4F12C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{365542FA-A25F-CED6-45E5-CBA16F4F12C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{365542FA-A25F-CED6-45E5-CBA16F4F12C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{365542FA-A25F-CED6-45E5-CBA16F4F12C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB07C0CE-B4B8-3EE4-BA2C-784F2F0B9BB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB07C0CE-B4B8-3EE4-BA2C-784F2F0B9BB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB07C0CE-B4B8-3EE4-BA2C-784F2F0B9BB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB07C0CE-B4B8-3EE4-BA2C-784F2F0B9BB5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5FE1A8E1-909B-1A07-D5F5-80363C1D89A7} = {CA253913-39DE-BFD0-C9A3-4B7EC6FBDF17}
+		{5D17DAD5-5BCD-2D4B-9299-32DF3D66B299} = {5FE1A8E1-909B-1A07-D5F5-80363C1D89A7}
+		{435023D0-7155-0A5E-85CF-B02DA5C1E98E} = {5FE1A8E1-909B-1A07-D5F5-80363C1D89A7}
+		{438BBCEA-0597-44A7-8493-BD399FCCCB55} = {5FE1A8E1-909B-1A07-D5F5-80363C1D89A7}
+		{2FD67E0D-625D-2495-AC08-700CC4E90F33} = {CA253913-39DE-BFD0-C9A3-4B7EC6FBDF17}
+		{EDBBBD0E-29CB-EA17-1781-D68465E9E616} = {2FD67E0D-625D-2495-AC08-700CC4E90F33}
+		{365542FA-A25F-CED6-45E5-CBA16F4F12C3} = {2FD67E0D-625D-2495-AC08-700CC4E90F33}
+		{CB07C0CE-B4B8-3EE4-BA2C-784F2F0B9BB5} = {2FD67E0D-625D-2495-AC08-700CC4E90F33}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8F775EBF-C26B-4FCC-9934-C824796CEB2D}
+	EndGlobalSection
+EndGlobal
