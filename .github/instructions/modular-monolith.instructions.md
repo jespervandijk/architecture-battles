@@ -66,7 +66,8 @@ applyTo: "**"
 - AcademicManagement module:
 
   - President use cases:
-    - Upsert University (IMPLEMENTED)
+    - Create University (IMPLEMENTED)
+    - Update University (IMPLEMENTED)
     - Archive University (IMPLEMENTED)
     - Create Department (IMPLEMENTED)
     - Update Department (IMPLEMENTED)
