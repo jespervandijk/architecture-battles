@@ -81,4 +81,20 @@ public sealed class Course
     {
         IsArchived = true;
     }
+
+    public void UpdateCourseDetails(Name title, Description? description, StudentCapacity? maxCapacity)
+    {
+        Title = title;
+        Description = description;
+        MaxCapacity = maxCapacity;
+    }
+
+    public void UpdateCourse(ProfessorId courseOwner, Name title, Description? description, Credits credits, StudentCapacity? maxCapacity)
+    {
+        CourseOwner = courseOwner;
+        Title = title;
+        Description = description;
+        Credits = credits;
+        MaxCapacity = maxCapacity;
+    }
 }
