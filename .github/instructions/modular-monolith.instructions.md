@@ -66,10 +66,11 @@ applyTo: "**"
 - AcademicManagement module:
 
   - President use cases:
-    - UpsertUniversity
-    - ArchiveUniversity
-    - Upsert Department
-    - ArchiveDepartment
+    - Upsert University (IMPLEMENTED)
+    - Archive University (IMPLEMENTED)
+    - Create Department (IMPLEMENTED)
+    - Update Department (IMPLEMENTED)
+    - Archive Department (IMPLEMENTED)
     - UpsertProfessor
     - PromoteProfessor
     - Assign Professor to Department (as normale Professor or as Head of Department)

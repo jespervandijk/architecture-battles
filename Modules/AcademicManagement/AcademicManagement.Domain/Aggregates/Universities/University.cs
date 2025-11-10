@@ -31,4 +31,9 @@ public sealed class University
     {
         return new University(UniversityId.Next(), president, name, [], false);
     }
+
+    public void Update(Name name)
+    {
+        Name = name;
+    }
 }
