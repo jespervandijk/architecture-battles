@@ -1,4 +1,5 @@
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Exceptions;
 using Marten;
 using Marten.Linq;
 
@@ -28,7 +29,18 @@ public abstract class Repository<TEntity, TId> : IRepository<TEntity, TId>
 
     public async Task<TEntity> GetByIdAsync(TId id)
     {
-        return await _documentSession.LoadAsync<TEntity>(id) ?? throw new KeyNotFoundException($"Entity of type {typeof(TEntity).Name} with id {id} was not found.");
+        return await _documentSession.LoadAsync<TEntity>(id) ?? throw new EntityNotFoundException(nameof(TEntity), id);
+    }
+
+    public async Task<TEntity?> TryGetByIdAsync(TId id)
+    {
+        return await _documentSession.LoadAsync<TEntity>(id);
+    }
+
+    public async Task<bool> ExistsAsync(TId id)
+    {
+        var entity = await _documentSession.LoadAsync<TEntity>(id);
+        return entity is not null;
     }
 
     public void Update(TEntity entity)

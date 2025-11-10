@@ -4,17 +4,21 @@ namespace AcademicManagement.Application.Abstractions.Repositories;
 
 public interface IRepository<TEntity, TId>
 {
-    public Task<IReadOnlyList<TEntity>> GetAllAsync();
+    Task<IReadOnlyList<TEntity>> GetAllAsync();
 
-    public Task<TEntity> GetByIdAsync(TId id);
+    Task<TEntity> GetByIdAsync(TId id);
 
-    public void Update(TEntity entity);
+    Task<TEntity?> TryGetByIdAsync(TId id);
 
-    public void Delete(TId id);
+    Task<bool> ExistsAsync(TId id);
 
-    public void Insert(TEntity entity);
+    void Update(TEntity entity);
 
-    public void Upsert(TEntity entity);
+    void Delete(TId id);
 
-    public IMartenQueryable<TEntity> Query();
+    void Insert(TEntity entity);
+
+    void Upsert(TEntity entity);
+
+    IMartenQueryable<TEntity> Query();
 }
