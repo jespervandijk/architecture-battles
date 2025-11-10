@@ -72,9 +72,9 @@ applyTo: "**"
     - Create Department (IMPLEMENTED)
     - Update Department (IMPLEMENTED)
     - Archive Department (IMPLEMENTED)
-    - UpsertProfessor
-    - PromoteProfessor
-    - Assign Professor to Department (as normale Professor or as Head of Department)
+    - Create Professor
+    - Update Professor
+    - Assign Professor to Department (as normal Professor or as Head of Department)
   - Professor use cases (As head of department for their own department):
     - UpsertCourse
     - ArchiveCourse
