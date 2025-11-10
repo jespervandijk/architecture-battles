@@ -1,7 +1,7 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
-using AcademicManagement.Domain.Aggregates.Professors;
 using FastEndpoints;
 using FluentValidation;
 
@@ -13,6 +13,11 @@ public class UpdateSectionByProfessorEndpoint : Endpoint<UpdateSectionByProfesso
     {
         Post("academic-management/course/section/update-by-teacher");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+    }
+
+    public override async Task HandleAsync(UpdateSectionByProfessor req, CancellationToken ct)
+    {
+        await req.ExecuteAsync(ct);
     }
 }
 
@@ -74,16 +79,12 @@ public class UpdateSectionByProfessorValidator : Validator<UpdateSectionByProfes
             .WithMessage("Section not found in this course")
             .MustAsync(async (request, ct) =>
             {
-                var courseRepo = Resolve<ICourseRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var course = await courseRepo.GetByIdAsync(request.CourseId);
-                var section = course?.Sections.FirstOrDefault(s => s.Id == request.SectionId);
-                var currentUser = userContext.GetCurrentUser();
-                var professorId = ProfessorId.From(currentUser.Id.Value);
-
-                return section?.Professor == professorId;
+                return await AuthorizationRules.UserIsSectionProfessor(
+                    Resolve<IUserContextService>(),
+                    Resolve<ICourseRepository>(),
+                    request.CourseId,
+                    request.SectionId);
             })
-            .WithMessage("Only the section professor can use this endpoint.");
+            .WithMessage("You must be the professor of this section");
     }
 }
