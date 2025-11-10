@@ -114,4 +114,14 @@ public sealed class Course
             Professors.Add(professorId);
         }
     }
+
+    public void RemoveProfessor(ProfessorId professorId)
+    {
+        if (professorId == CourseOwner)
+        {
+            throw new InvalidOperationException("Cannot remove the course owner. Please assign a new course owner first.");
+        }
+
+        _ = Professors.Remove(professorId);
+    }
 }
