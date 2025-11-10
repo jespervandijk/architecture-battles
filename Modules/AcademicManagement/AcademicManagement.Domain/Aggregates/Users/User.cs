@@ -6,8 +6,8 @@ namespace AcademicManagement.Domain.Aggregates.Users;
 public sealed class User
 {
     public UserId Id { get; init; }
-    public UserName Name { get; set; }
-    public UserRole Role { get; private set; }
+    public UserName Name { get; init; }
+    public UserRole Role { get; init; }
 
     [JsonConstructor]
     private User(UserId id, UserName name, UserRole role)

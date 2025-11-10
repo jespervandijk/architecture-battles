@@ -7,9 +7,9 @@ namespace AcademicManagement.Domain.Aggregates.Presidents;
 
 public sealed class President
 {
-    public PresidentId Id { get; private set; }
+    public PresidentId Id { get; init; }
 
-    public UserId UserId { get; private set; }
+    public UserId UserId { get; init; }
 
     public Name FirstName { get; set; }
 
@@ -28,5 +28,11 @@ public sealed class President
     public static President Create(UserId userId, Name firstName, Name lastName)
     {
         return new President(PresidentId.Next(), userId, firstName, lastName);
+    }
+
+    public void Update(Name firstName, Name lastName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
     }
 }
