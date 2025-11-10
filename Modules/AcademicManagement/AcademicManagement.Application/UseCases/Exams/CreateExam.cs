@@ -1,8 +1,8 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Exams;
-using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
 using FluentValidation;
@@ -91,16 +91,12 @@ public class CreateExamValidator : Validator<CreateExam>
             .WithMessage("Section not found in this course")
             .MustAsync(async (request, ct) =>
             {
-                var courseRepo = Resolve<ICourseRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var course = await courseRepo.GetByIdAsync(request.CourseId);
-                var section = course?.Sections.FirstOrDefault(s => s.Id == request.SectionId);
-                var currentUser = userContext.GetCurrentUser();
-                var professorId = ProfessorId.From(currentUser.Id.Value);
-
-                return section?.Professor == professorId;
+                return await AuthorizationRules.UserIsSectionProfessor(
+                    Resolve<IUserContextService>(),
+                    Resolve<ICourseRepository>(),
+                    request.CourseId,
+                    request.SectionId);
             })
-            .WithMessage("Only the section professor can create exams");
+            .WithMessage("You must be the professor of this section");
     }
 }

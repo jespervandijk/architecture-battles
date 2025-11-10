@@ -1,7 +1,7 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Departments;
-using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Scalars;
@@ -68,15 +68,11 @@ public class CreateDepartmentValidator : Validator<CreateDepartment>
             .WithMessage("University not found")
             .MustAsync(async (universityId, ct) =>
             {
-                var universityRepo = Resolve<IUniversityRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var university = await universityRepo.GetByIdAsync(universityId);
-                var currentUser = userContext.GetCurrentUser();
-
-                var presidentId = PresidentId.From(currentUser.Id.Value);
-                return university.President == presidentId;
+                return await AuthorizationRules.UserIsPresidentOfUniversity(
+                    Resolve<IUserContextService>(),
+                    Resolve<IUniversityRepository>(),
+                    universityId);
             })
-            .WithMessage("You are not authorized to manage departments for this university");
+            .WithMessage("You must be the president of this university");
     }
 }

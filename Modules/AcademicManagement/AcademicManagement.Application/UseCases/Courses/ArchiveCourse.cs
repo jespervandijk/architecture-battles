@@ -1,7 +1,7 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
-using AcademicManagement.Domain.Aggregates.Professors;
 using FastEndpoints;
 using FluentValidation;
 
@@ -61,17 +61,12 @@ public class ArchiveCourseValidator : Validator<ArchiveCourse>
             .WithMessage("Course not found")
             .MustAsync(async (courseId, ct) =>
             {
-                var courseRepo = Resolve<ICourseRepository>();
-                var departmentRepo = Resolve<IDepartmentRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var course = await courseRepo.GetByIdAsync(courseId);
-                var department = await departmentRepo.GetByIdAsync(course.Department);
-                var currentUser = userContext.GetCurrentUser();
-
-                var professorId = ProfessorId.From(currentUser.Id.Value);
-                return department.HeadOfDepartment == professorId;
+                return await AuthorizationRules.UserIsHeadOfCourseDepartment(
+                    Resolve<IUserContextService>(),
+                    Resolve<ICourseRepository>(),
+                    Resolve<IDepartmentRepository>(),
+                    courseId);
             })
-            .WithMessage("Only the head of department can archive courses");
+            .WithMessage("You must be the head of the department that owns this course");
     }
 }

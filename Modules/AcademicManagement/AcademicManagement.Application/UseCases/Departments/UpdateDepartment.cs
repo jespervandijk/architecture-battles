@@ -1,7 +1,7 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Departments;
-using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
@@ -68,17 +68,12 @@ public class UpdateDepartmentValidator : Validator<UpdateDepartment>
             .WithMessage("Department not found")
             .MustAsync(async (departmentId, ct) =>
             {
-                var departmentRepo = Resolve<IDepartmentRepository>();
-                var universityRepo = Resolve<IUniversityRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var department = await departmentRepo.GetByIdAsync(departmentId);
-                var university = await universityRepo.GetByIdAsync(department.UniversityId);
-                var currentUser = userContext.GetCurrentUser();
-
-                var presidentId = PresidentId.From(currentUser.Id.Value);
-                return university.President == presidentId;
+                return await AuthorizationRules.UserIsPresidentOfDepartmentUniversity(
+                    Resolve<IUserContextService>(),
+                    Resolve<IDepartmentRepository>(),
+                    Resolve<IUniversityRepository>(),
+                    departmentId);
             })
-            .WithMessage("You are not authorized to modify this department");
+            .WithMessage("You must be the president of the university that owns this department");
     }
 }

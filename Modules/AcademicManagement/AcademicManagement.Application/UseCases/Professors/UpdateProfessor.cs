@@ -1,6 +1,6 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Domain.Aggregates.Presidents;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Professors;
 using FastEndpoints;
 using FluentValidation;
@@ -71,17 +71,12 @@ public class UpdateProfessorValidator : Validator<UpdateProfessor>
             .WithMessage("Professor not found")
             .MustAsync(async (professorId, ct) =>
             {
-                var professorRepo = Resolve<IProfessorRepository>();
-                var universityRepo = Resolve<IUniversityRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var professor = await professorRepo.GetByIdAsync(professorId);
-                var university = await universityRepo.GetByIdAsync(professor.WorkPlace);
-                var currentUser = userContext.GetCurrentUser();
-
-                var presidentId = PresidentId.From(currentUser.Id.Value);
-                return university.President == presidentId;
+                return await AuthorizationRules.UserIsPresidentOfProfessorUniversity(
+                    Resolve<IUserContextService>(),
+                    Resolve<IProfessorRepository>(),
+                    Resolve<IUniversityRepository>(),
+                    professorId);
             })
-            .WithMessage("You are not authorized to update this professor");
+            .WithMessage("You must be the president of the university where this professor works");
     }
 }

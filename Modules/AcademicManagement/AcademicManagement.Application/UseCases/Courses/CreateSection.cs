@@ -1,5 +1,6 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Professors;
 using FastEndpoints;
@@ -65,16 +66,12 @@ public class CreateSectionValidator : Validator<CreateSection>
             .WithMessage("Course not found")
             .MustAsync(async (courseId, ct) =>
             {
-                var courseRepo = Resolve<ICourseRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var course = await courseRepo.GetByIdAsync(courseId);
-                var currentUser = userContext.GetCurrentUser();
-                var professorId = ProfessorId.From(currentUser.Id.Value);
-
-                return course?.CourseOwner == professorId;
+                return await AuthorizationRules.UserIsCourseOwner(
+                    Resolve<IUserContextService>(),
+                    Resolve<ICourseRepository>(),
+                    courseId);
             })
-            .WithMessage("Only the course owner can create sections");
+            .WithMessage("You must be the course owner");
 
         _ = RuleFor(x => x)
             .MustAsync(async (request, ct) =>

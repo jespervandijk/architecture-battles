@@ -1,5 +1,6 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
@@ -80,21 +81,16 @@ public class UpdateCourseByHeadOfDepartmentValidator : Validator<UpdateCourseByH
             })
             .WithMessage("Professor not found");
 
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
+        _ = RuleFor(x => x.CourseId)
+            .MustAsync(async (courseId, ct) =>
             {
-                var courseRepo = Resolve<ICourseRepository>();
-                var departmentRepo = Resolve<IDepartmentRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var course = await courseRepo.GetByIdAsync(request.CourseId);
-                var department = await departmentRepo.GetByIdAsync(course.Department);
-                var currentUser = userContext.GetCurrentUser();
-
-                var professorId = ProfessorId.From(currentUser.Id.Value);
-                return department.HeadOfDepartment == professorId;
+                return await AuthorizationRules.UserIsHeadOfCourseDepartment(
+                    Resolve<IUserContextService>(),
+                    Resolve<ICourseRepository>(),
+                    Resolve<IDepartmentRepository>(),
+                    courseId);
             })
-            .WithMessage("Only the head of department can update all course fields");
+            .WithMessage("You must be the head of the department that owns this course");
 
         _ = RuleFor(x => x)
             .MustAsync(async (request, ct) =>

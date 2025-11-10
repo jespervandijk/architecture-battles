@@ -1,7 +1,7 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
-using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
 using FluentValidation;
@@ -68,15 +68,11 @@ public class UpdateCourseDetailsByCourseOwnerValidator : Validator<UpdateCourseD
             .WithMessage("Course not found")
             .MustAsync(async (courseId, ct) =>
             {
-                var courseRepo = Resolve<ICourseRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var course = await courseRepo.GetByIdAsync(courseId);
-                var currentUser = userContext.GetCurrentUser();
-
-                var professorId = ProfessorId.From(currentUser.Id.Value);
-                return course.CourseOwner == professorId;
+                return await AuthorizationRules.UserIsCourseOwner(
+                    Resolve<IUserContextService>(),
+                    Resolve<ICourseRepository>(),
+                    courseId);
             })
-            .WithMessage("Only the course owner can update course details");
+            .WithMessage("You must be the course owner");
     }
 }

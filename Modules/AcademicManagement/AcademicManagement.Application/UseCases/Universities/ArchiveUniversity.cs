@@ -1,6 +1,6 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Domain.Aggregates.Presidents;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Universities;
 using FastEndpoints;
 using FluentValidation;
@@ -68,16 +68,12 @@ public class ArchiveUniversityValidator : Validator<ArchiveUniversity>
             .WithMessage("University not found")
             .MustAsync(async (universityId, ct) =>
             {
-                var universityRepo = Resolve<IUniversityRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var university = await universityRepo.GetByIdAsync(universityId);
-                var currentUser = userContext.GetCurrentUser();
-
-                var presidentId = PresidentId.From(currentUser.Id.Value);
-                return university.President == presidentId;
+                return await AuthorizationRules.UserIsPresidentOfUniversity(
+                    Resolve<IUserContextService>(),
+                    Resolve<IUniversityRepository>(),
+                    universityId);
             })
-            .WithMessage("You are not authorized to archive this university");
+            .WithMessage("You must be the president of this university");
     }
 }
 

@@ -1,5 +1,6 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
@@ -64,16 +65,11 @@ public class UpdatePresidentValidator : Validator<UpdatePresident>
                 return president is not null;
             })
             .WithMessage("President not found")
-            .MustAsync(async (presidentId, ct) =>
+            .Must((presidentId) =>
             {
-                var presidentRepo = Resolve<IPresidentRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var president = await presidentRepo.GetByIdAsync(presidentId);
-                var currentUser = userContext.GetCurrentUser();
-
-                var currentPresidentId = PresidentId.From(currentUser.Id.Value);
-                return president.Id == currentPresidentId;
+                return AuthorizationRules.UserIsPresident(
+                    Resolve<IUserContextService>(),
+                    presidentId);
             })
             .WithMessage("You can only update your own president profile");
     }
