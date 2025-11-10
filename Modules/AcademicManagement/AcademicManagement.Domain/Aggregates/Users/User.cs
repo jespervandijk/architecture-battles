@@ -1,13 +1,15 @@
 
+using System.Text.Json.Serialization;
+
 namespace AcademicManagement.Domain.Aggregates.Users;
 
-public record User
+public sealed class User
 {
-    public UserId Id { get; private set; }
+    public UserId Id { get; init; }
     public UserName Name { get; set; }
-
     public UserRole Role { get; private set; }
 
+    [JsonConstructor]
     private User(UserId id, UserName name, UserRole role)
     {
         Id = id;
@@ -22,6 +24,6 @@ public record User
 
     public static User FromClaims(string id, string name, string role)
     {
-        return new User(UserId.From(Guid.Parse(id)), UserName.From(name), UserRole.From(role));
+        return new User(UserId.From(Guid.Parse(id)), UserName.From(name), Enum.Parse<UserRole>(role));
     }
 }
