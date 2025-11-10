@@ -39,12 +39,7 @@ public class ArchiveCourseHandler : ICommandHandler<ArchiveCourse>
 
     public async Task ExecuteAsync(ArchiveCourse command, CancellationToken ct)
     {
-        var course = await _courseRepository.GetByIdAsync(command.CourseId);
-        if (course is null)
-        {
-            throw new InvalidOperationException("Course not found");
-        }
-
+        var course = await _courseRepository.GetByIdAsync(command.CourseId) ?? throw new InvalidOperationException("Course not found");
         course.Archive();
         _courseRepository.Update(course);
         await _unitOfWork.SaveChangesAsync();
