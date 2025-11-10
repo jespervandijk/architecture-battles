@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Aggregates.Professors;
@@ -17,17 +18,21 @@ public sealed class University
 
     public List<ProfessorId> Professors { get; set; }
 
-    private University(UniversityId id, PresidentId president, Name name, List<DepartmentId> departments, List<ProfessorId> professors)
+    public bool IsArchived { get; set; }
+
+    [JsonConstructor]
+    private University(UniversityId id, PresidentId president, Name name, List<DepartmentId> departments, List<ProfessorId> professors, bool isArchived)
     {
         Id = id;
         President = president;
         Name = name;
         Departments = departments;
+        IsArchived = isArchived;
         Professors = professors;
     }
 
     public static University Create(PresidentId president, Name name)
     {
-        return new University(UniversityId.Next(), president, name, [], []);
+        return new University(UniversityId.Next(), president, name, [], [], false);
     }
 }
