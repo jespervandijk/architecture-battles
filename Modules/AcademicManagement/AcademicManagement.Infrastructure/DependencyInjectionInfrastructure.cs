@@ -21,6 +21,7 @@ public static class InfrastructureDependencyInjection
         return services
             .AddScoped<IUnitOfWork, UnitOfWork>()
             .AddScoped<ICourseRepository, CourseRepository>()
+            .AddScoped<IDepartmentRepository, DepartmentRepository>()
             .AddScoped<IPresidentRepository, PresidentRepository>()
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IUniversityRepository, UniversityRepository>()

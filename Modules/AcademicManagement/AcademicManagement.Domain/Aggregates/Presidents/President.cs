@@ -1,10 +1,11 @@
 
+using System.Text.Json.Serialization;
 using AcademicManagement.Domain.Aggregates.Users;
 using AcademicManagement.Domain.Scalars;
 
 namespace AcademicManagement.Domain.Aggregates.Presidents;
 
-public class President
+public sealed class President
 {
     public PresidentId Id { get; private set; }
 
@@ -15,6 +16,7 @@ public class President
     public Name LastName { get; set; }
 
 
+    [JsonConstructor]
     private President(PresidentId id, UserId userId, Name firstName, Name lastName)
     {
         Id = id;

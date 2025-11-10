@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
@@ -14,25 +13,22 @@ public sealed class University
 
     public Name Name { get; set; }
 
-    public List<DepartmentId> Departments { get; set; }
-
     public List<ProfessorId> Professors { get; set; }
 
     public bool IsArchived { get; set; }
 
     [JsonConstructor]
-    private University(UniversityId id, PresidentId president, Name name, List<DepartmentId> departments, List<ProfessorId> professors, bool isArchived)
+    private University(UniversityId id, PresidentId president, Name name, List<ProfessorId> professors, bool isArchived)
     {
         Id = id;
         President = president;
         Name = name;
-        Departments = departments;
         IsArchived = isArchived;
         Professors = professors;
     }
 
     public static University Create(PresidentId president, Name name)
     {
-        return new University(UniversityId.Next(), president, name, [], [], false);
+        return new University(UniversityId.Next(), president, name, [], false);
     }
 }
