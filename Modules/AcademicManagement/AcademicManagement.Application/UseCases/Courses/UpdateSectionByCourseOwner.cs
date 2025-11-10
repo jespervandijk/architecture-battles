@@ -1,9 +1,11 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Professors;
 using FastEndpoints;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -13,6 +15,12 @@ public class UpdateSectionByCourseOwnerEndpoint : Endpoint<UpdateSectionByCourse
     {
         Post("academic-management/course/section/update-by-course-owner");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+        Description(x => x.WithTags("academic-management/courses/section"));
+    }
+
+    public override async Task HandleAsync(UpdateSectionByCourseOwner req, CancellationToken ct)
+    {
+        await req.ExecuteAsync(ct);
     }
 }
 
@@ -65,16 +73,12 @@ public class UpdateSectionByCourseOwnerValidator : Validator<UpdateSectionByCour
             .WithMessage("Course not found")
             .MustAsync(async (courseId, ct) =>
             {
-                var courseRepo = Resolve<ICourseRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var course = await courseRepo.GetByIdAsync(courseId);
-                var currentUser = userContext.GetCurrentUser();
-                var professorId = ProfessorId.From(currentUser.Id.Value);
-
-                return course?.CourseOwner == professorId;
+                return await AuthorizationRules.UserIsCourseOwner(
+                    Resolve<IUserContextService>(),
+                    Resolve<ICourseRepository>(),
+                    courseId);
             })
-            .WithMessage("Only the course owner can use this endpoint.");
+            .WithMessage("You must be the course owner");
 
         _ = RuleFor(x => x)
             .MustAsync(async (request, ct) =>
