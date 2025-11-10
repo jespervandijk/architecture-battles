@@ -11,22 +11,20 @@ public sealed class Department
     public UniversityId UniversityId { get; set; }
     public Name Name { get; set; }
     public ProfessorId HeadOfDepartment { get; set; }
-    public List<ProfessorId> ProfessorIds { get; set; }
     public bool IsArchived { get; set; }
 
     [JsonConstructor]
-    private Department(DepartmentId id, UniversityId universityId, Name name, ProfessorId headOfDepartment, List<ProfessorId> professorIds, bool isArchived)
+    private Department(DepartmentId id, UniversityId universityId, Name name, ProfessorId headOfDepartment, bool isArchived)
     {
         Id = id;
         UniversityId = universityId;
         Name = name;
         HeadOfDepartment = headOfDepartment;
-        ProfessorIds = professorIds;
         IsArchived = isArchived;
     }
     public static Department Create(UniversityId universityId, Name name, ProfessorId headOfDepartment)
     {
-        return new Department(DepartmentId.Next(), universityId, name, headOfDepartment, [], false);
+        return new Department(DepartmentId.Next(), universityId, name, headOfDepartment, false);
     }
 
     public void Update(Name name, ProfessorId headOfDepartment)

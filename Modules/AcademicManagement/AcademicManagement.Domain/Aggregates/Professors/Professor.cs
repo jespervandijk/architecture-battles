@@ -9,11 +9,11 @@ namespace AcademicManagement.Domain.Aggregates.Professors;
 public sealed class Professor
 {
     public ProfessorId Id { get; init; }
-    public UserId UserId { get; set; }
+    public UserId UserId { get; init; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public EmailAddress EmailAddress { get; set; }
-    public UniversityId WorkPlace { get; set; }
+    public UniversityId WorkPlace { get; init; }
     public DepartmentId? DepartmentId { get; set; }
     public Rank Rank { get; set; }
 
@@ -33,5 +33,18 @@ public sealed class Professor
     public static Professor Create(string firstName, string lastName, EmailAddress emailAddress, Rank rank, UniversityId workPlace, UserId userId, DepartmentId? departmentId = null)
     {
         return new Professor(ProfessorId.Next(), firstName, lastName, emailAddress, rank, workPlace, userId, departmentId);
+    }
+
+    public void Update(string firstName, string lastName, EmailAddress emailAddress, Rank rank)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        EmailAddress = emailAddress;
+        Rank = rank;
+    }
+
+    public void AssignToDepartment(DepartmentId departmentId)
+    {
+        DepartmentId = departmentId;
     }
 }
