@@ -1,8 +1,10 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
+using AcademicManagement.Application.Exceptions;
 using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Assignments;
 using AcademicManagement.Domain.Aggregates.Courses;
+using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
 using FluentValidation;
@@ -16,6 +18,11 @@ public class CreateAssignmentEndpoint : Endpoint<CreateAssignment, AssignmentId>
     {
         Post("/assignments");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+    }
+
+    public override async Task HandleAsync(CreateAssignment req, CancellationToken ct)
+    {
+        Response = await req.ExecuteAsync(ct);
     }
 }
 
@@ -32,16 +39,29 @@ public record CreateAssignment : ICommand<AssignmentId>
 public class CreateAssignmentHandler : ICommandHandler<CreateAssignment, AssignmentId>
 {
     private readonly IAssignmentRepository _assignmentRepository;
+    private readonly ICourseRepository _courseRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public CreateAssignmentHandler(IAssignmentRepository assignmentRepository, IUnitOfWork unitOfWork)
+    public CreateAssignmentHandler(IAssignmentRepository assignmentRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, IUserContextService userContextService)
     {
         _assignmentRepository = assignmentRepository;
         _unitOfWork = unitOfWork;
+        _courseRepository = courseRepository;
+        _userContextService = userContextService;
     }
 
     public async Task<AssignmentId> ExecuteAsync(CreateAssignment command, CancellationToken ct)
     {
+        var course = await _courseRepository.GetByIdAsync(command.CourseId);
+        var section = (course?.Sections.FirstOrDefault(s => s.Id == command.SectionId)) ?? throw new EntityNotFoundException(nameof(Section), command.SectionId);
+
+        var professorId = _userContextService.GetProfessorId();
+        if (section.Professor != professorId)
+        {
+            throw new UnauthorizedAccessException("You are not the professor of this section.");
+        }
+
         var assignment = Assignment.Create(
             command.SectionId,
             command.Title,
@@ -54,46 +74,5 @@ public class CreateAssignmentHandler : ICommandHandler<CreateAssignment, Assignm
         await _unitOfWork.SaveChangesAsync();
 
         return assignment.Id;
-    }
-}
-
-public class CreateAssignmentValidator : Validator<CreateAssignment>
-{
-    public CreateAssignmentValidator()
-    {
-        _ = RuleFor(x => x.SectionId).NotEmpty();
-        _ = RuleFor(x => x.CourseId).NotEmpty();
-        _ = RuleFor(x => x.Title).NotEmpty();
-        _ = RuleFor(x => x.GradeWeight).NotEmpty();
-        _ = RuleFor(x => x.SchoolYear).NotEmpty();
-        _ = RuleFor(x => x.DocumentUrl).NotEmpty();
-
-        _ = RuleFor(x => x.CourseId)
-            .MustAsync(async (courseId, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var course = await courseRepo.GetByIdAsync(courseId);
-                return course is not null;
-            })
-            .WithMessage("Course not found");
-
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-
-                var course = await courseRepo.GetByIdAsync(request.CourseId);
-                return course?.Sections.Any(s => s.Id == request.SectionId) == true;
-            })
-            .WithMessage("Section not found in this course")
-            .MustAsync(async (request, ct) =>
-            {
-                return await AuthorizationRules.UserIsSectionProfessor(
-                    Resolve<IUserContextService>(),
-                    Resolve<ICourseRepository>(),
-                    request.CourseId,
-                    request.SectionId);
-            })
-            .WithMessage("You must be the professor of this section");
     }
 }
