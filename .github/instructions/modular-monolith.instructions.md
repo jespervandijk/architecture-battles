@@ -52,3 +52,55 @@ applyTo: "**"
 - The infrastructure layer also contains a unit of work implementation. This repositories don't save anything until the unit of work's SaveChangesAsync method is called.
 - The repositories and unit of work use MartenDb under the hood.
 - I use martenDb as document database.
+
+## The Academic Domain
+
+- This solution has multiple modules. They are all about the academic domain.
+- The project is an example to understand the modular monolith architecture pattern, clean architecture and DDD principles and vertical slices.
+- The modules are:
+  - AcademicManagement: Its used by presidents of universities and professors to manage courses.
+  - StudentEnrollment: Its used by students to enroll in courses.
+
+## Use Cases Per Module
+
+- AcademicManagement module:
+
+  - President use cases:
+    - UpsertUniversity
+    - ArchiveUniversity
+    - Upsert Department
+    - ArchiveDepartment
+    - UpsertProfessor
+    - PromoteProfessor
+    - Assign Professor to Department (as normale Professor or as Head of Department)
+  - Professor use cases (As head of department for their own department):
+    - UpsertCourse
+    - ArchiveCourse
+    - AssignProfessorToCourse (as normal professor or course owner)
+  - Professor use cases (As Course owner for their own courses):
+    - AddProfessorsToCourse
+    - RemoveProfessorsFromCourse
+    - CreateSection
+    - AssignSectionProfessor
+  - Professor use cases (as only professor of a section of a course):
+
+    - AddAssignment
+    - AddExam
+    - UpdateSection
+    - AddExamResult
+    - AddAssignmentResult
+
+  - OfficalAcademicRegistration module:
+
+    - Register University
+    - Show Universities
+    - Register Student
+    - Create Student Join University Request
+    - Approve Student Join University Request
+
+  - StudentEnrollment module:
+    - Student use cases:
+      - EnrollInCourse
+      - SubmitAssignment
+      - ViewGrades
+      - WithdrawFromCourse
