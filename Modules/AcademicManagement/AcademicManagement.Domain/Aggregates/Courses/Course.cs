@@ -97,4 +97,21 @@ public sealed class Course
     {
         IsArchived = true;
     }
+
+    public void AssignProfessorAsCourseOwner(ProfessorId professorId)
+    {
+        CourseOwner = professorId;
+        if (!Professors.Contains(professorId))
+        {
+            Professors.Add(professorId);
+        }
+    }
+
+    public void AssignProfessor(ProfessorId professorId)
+    {
+        if (!Professors.Contains(professorId))
+        {
+            Professors.Add(professorId);
+        }
+    }
 }
