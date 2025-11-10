@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using AcademicManagement.Domain.Aggregates.Presidents;
+using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Users;
 using Microsoft.AspNetCore.Http;
 
@@ -7,6 +9,8 @@ namespace AcademicManagement.Application;
 public interface IUserContextService
 {
     User GetCurrentUser();
+    PresidentId GetPresidentId();
+    ProfessorId GetProfessorId();
 }
 
 public class UserContextService : IUserContextService
@@ -38,4 +42,15 @@ public class UserContextService : IUserContextService
         return User.FromClaims(idClaim.Value, usernameClaim, roleClaim.Value);
     }
 
+    public PresidentId GetPresidentId()
+    {
+        var user = GetCurrentUser();
+        return PresidentId.From(user.Id.Value);
+    }
+
+    public ProfessorId GetProfessorId()
+    {
+        var user = GetCurrentUser();
+        return ProfessorId.From(user.Id.Value);
+    }
 }
