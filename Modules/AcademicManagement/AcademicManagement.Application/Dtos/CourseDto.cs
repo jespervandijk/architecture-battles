@@ -1,7 +1,5 @@
-using AcademicManagement.Domain.Aggregates.Assignments;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Departments;
-using AcademicManagement.Domain.Aggregates.Exams;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Scalars;
@@ -45,8 +43,6 @@ public record SectionDto
     public required SectionId Id { get; init; }
     public required string Name { get; init; }
     public required ProfessorId Professor { get; init; }
-    public required List<Assignment> Assignments { get; init; }
-    public required List<Exam> Exams { get; init; }
     public Uri? TeachingMaterialsUrl { get; init; }
 
     public static SectionDto FromDomain(Section section)
@@ -56,8 +52,6 @@ public record SectionDto
             Id = section.Id,
             Name = section.Name,
             Professor = section.Professor,
-            Assignments = section.Assignments,
-            Exams = section.Exams,
             TeachingMaterialsUrl = section.TeachingMaterialsUrl
         };
     }
