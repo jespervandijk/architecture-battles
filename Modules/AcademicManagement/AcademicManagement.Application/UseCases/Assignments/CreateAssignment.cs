@@ -1,13 +1,10 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Application.Exceptions;
-using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Assignments;
 using AcademicManagement.Domain.Aggregates.Courses;
-using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
-using FluentValidation;
 using Qowaiv;
 
 namespace AcademicManagement.Application.UseCases.Assignments;
