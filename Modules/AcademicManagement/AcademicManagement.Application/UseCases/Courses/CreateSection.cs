@@ -15,6 +15,11 @@ public class CreateSectionEndpoint : Endpoint<CreateSection, SectionId>
         Post("academic-management/course/section/create");
         Policies(PolicyAcademicManagement.ProfessorOnly);
     }
+
+    public override async Task HandleAsync(CreateSection req, CancellationToken ct)
+    {
+        Response = await req.ExecuteAsync(ct);
+    }
 }
 
 public record CreateSection : ICommand<SectionId>
