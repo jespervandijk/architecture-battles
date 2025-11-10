@@ -1,5 +1,7 @@
+using AcademicManagement.Domain.Aggregates.Assignments;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Departments;
+using AcademicManagement.Domain.Aggregates.Exams;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Scalars;

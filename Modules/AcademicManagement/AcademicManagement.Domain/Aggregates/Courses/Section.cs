@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using AcademicManagement.Domain.Aggregates.Assignments;
+using AcademicManagement.Domain.Aggregates.Exams;
 using AcademicManagement.Domain.Aggregates.Professors;
 
 namespace AcademicManagement.Domain.Aggregates.Courses;
@@ -8,18 +10,18 @@ public sealed class Section
     public SectionId Id { get; init; }
     public string Name { get; internal set; }
     public ProfessorId Professor { get; internal set; }
-    public List<Assignment> Assignments { get; internal set; }
-    public List<Exam> Exams { get; internal set; }
+    public List<AssignmentId> AssignmentIds { get; internal set; }
+    public List<ExamId> ExamIds { get; internal set; }
     public Uri? TeachingMaterialsUrl { get; internal set; }
 
     [JsonConstructor]
-    private Section(SectionId id, string name, ProfessorId professor, List<Assignment> assignments, List<Exam> exams, Uri? teachingMaterialsUrl)
+    private Section(SectionId id, string name, ProfessorId professor, List<AssignmentId> assignmentIds, List<ExamId> examIds, Uri? teachingMaterialsUrl)
     {
         Id = id;
         Name = name;
         Professor = professor;
-        Assignments = assignments;
-        Exams = exams;
+        AssignmentIds = assignmentIds;
+        ExamIds = examIds;
         TeachingMaterialsUrl = teachingMaterialsUrl;
     }
 
