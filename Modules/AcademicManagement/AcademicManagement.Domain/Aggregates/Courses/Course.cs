@@ -77,11 +77,6 @@ public sealed class Course
         );
     }
 
-    public void Archive()
-    {
-        IsArchived = true;
-    }
-
     public void UpdateCourseDetails(Name title, Description? description, StudentCapacity? maxCapacity)
     {
         Title = title;
@@ -96,5 +91,10 @@ public sealed class Course
         Description = description;
         Credits = credits;
         MaxCapacity = maxCapacity;
+    }
+
+    public void Archive()
+    {
+        IsArchived = true;
     }
 }

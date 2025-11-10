@@ -81,8 +81,8 @@ applyTo: "**"
     - Update Professor (IMPLEMENTED)
     - Assign Professor to Department (as normal Professor or as Head of Department) (IMPLEMENTED)
   - Professor use cases (As head of department for their own department):
-    - UpsertCourse
-    - ArchiveCourse
+    - Create Course
+    - Archive Course
     - AssignProfessorToCourse (as normal professor or course owner)
   - Professor use cases (As Course owner for their own courses):
     - AddProfessorsToCourse
