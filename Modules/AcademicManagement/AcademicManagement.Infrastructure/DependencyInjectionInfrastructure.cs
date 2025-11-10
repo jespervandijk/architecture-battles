@@ -25,7 +25,9 @@ public static class InfrastructureDependencyInjection
             .AddScoped<IPresidentRepository, PresidentRepository>()
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IUniversityRepository, UniversityRepository>()
-            .AddScoped<IProfessorRepository, ProfessorRepository>();
+            .AddScoped<IProfessorRepository, ProfessorRepository>()
+            .AddScoped<IAssignmentRepository, AssignmentRepository>()
+            .AddScoped<IExamRepository, ExamRepository>();
     }
 
 }

@@ -81,33 +81,37 @@ applyTo: "**"
     - Update Professor (IMPLEMENTED)
     - Assign Professor to Department (as normal Professor or as Head of Department) (IMPLEMENTED)
   - Professor use cases (As head of department for their own department):
-    - Create Course
-    - Archive Course
-    - AssignProfessorToCourse (as normal professor or course owner)
+    - Create Course (IMPLEMENTED)
+    - Archive Course (IMPLEMENTED)
+    - AssignProfessorToCourse (as normal professor or course owner) (IMPLEMENTED)
+    - Update Course (IMPLEMENTED)
+    - RemoveProfessorFromCourse (IMPLEMENTED)
   - Professor use cases (As Course owner for their own courses):
-    - AddProfessorsToCourse
-    - RemoveProfessorsFromCourse
-    - CreateSection
-    - AssignSectionProfessor
+    - Update course details (IMPLEMENTED)
+    - CreateSection (INIMPLEMENTED)
+    - AssignSectionProfessor (IMPLEMENTED)
   - Professor use cases (as only professor of a section of a course):
 
-    - AddAssignment
-    - AddExam
-    - UpdateSection
+    - AddAssignment (INIMPLEMENTED)
+    - AddExam (INIMPLEMENTED)
+    - UpdateSection (INIMPLEMENTED)
     - AddExamResult
     - AddAssignmentResult
 
-  - OfficalAcademicRegistration module:
+  - President and Professor use cases:
+    - GetCourses (IMPLEMENTED)
 
-    - Register University
-    - Show Universities
-    - Register Student
-    - Create Student Join University Request
-    - Approve Student Join University Request
+- OfficalAcademicRegistration module:
 
-  - StudentEnrollment module:
-    - Student use cases:
-      - EnrollInCourse
-      - SubmitAssignment
-      - ViewGrades
-      - WithdrawFromCourse
+  - Register University
+  - Show Universities
+  - Register Student
+  - Create Student Join University Request
+  - Approve Student Join University Request
+
+- StudentEnrollment module:
+  - Student use cases:
+    - EnrollInCourse
+    - SubmitAssignment
+    - ViewGrades
+    - WithdrawFromCourse

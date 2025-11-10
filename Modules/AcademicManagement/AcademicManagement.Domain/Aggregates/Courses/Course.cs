@@ -124,4 +124,45 @@ public sealed class Course
 
         _ = Professors.Remove(professorId);
     }
+
+    public void CreateSection(string name, ProfessorId professor)
+    {
+        var section = Section.Create(name, professor);
+        Sections.Add(section);
+    }
+
+    public void UpdateSection(SectionId sectionId, string name, ProfessorId professor)
+    {
+        var section = Sections.FirstOrDefault(s => s.Id == sectionId) ?? throw new InvalidOperationException($"Section with id {sectionId} not found in this course.");
+        section.Update(name, professor);
+    }
+
+    public void UpdateSectionDetails(SectionId sectionId, string name, Uri? teachingMaterialsUrl)
+    {
+        var section = Sections.FirstOrDefault(s => s.Id == sectionId) ?? throw new InvalidOperationException($"Section with id {sectionId} not found in this course.");
+        section.UpdateDetails(name, teachingMaterialsUrl);
+    }
+
+    public void Validate()
+    {
+        CourseValidator.Validate(this);
+    }
+
+    private static class CourseValidator
+    {
+        private const int MaxSections = 4;
+
+        public static void Validate(Course course)
+        {
+            ValidateSectionCount(course.Sections.Count);
+        }
+
+        private static void ValidateSectionCount(int currentCount)
+        {
+            if (currentCount >= MaxSections)
+            {
+                throw new InvalidOperationException($"A course cannot have more than {MaxSections} sections. Each section takes up a school period and there are only {MaxSections} periods in a year.");
+            }
+        }
+    }
 }
