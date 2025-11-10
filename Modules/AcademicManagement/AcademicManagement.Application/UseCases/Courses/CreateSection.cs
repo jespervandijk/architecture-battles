@@ -1,6 +1,5 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Professors;
 using FastEndpoints;
@@ -32,17 +31,38 @@ public record CreateSection : ICommand<SectionId>
 public class CreateSectionHandler : ICommandHandler<CreateSection, SectionId>
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly IProfessorRepository _professorRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public CreateSectionHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork)
+    public CreateSectionHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IProfessorRepository professorRepository, IUserContextService userContextService)
     {
         _courseRepository = courseRepository;
         _unitOfWork = unitOfWork;
+        _professorRepository = professorRepository;
+        _userContextService = userContextService;
     }
 
     public async Task<SectionId> ExecuteAsync(CreateSection command, CancellationToken ct)
     {
-        var course = await _courseRepository.GetByIdAsync(command.CourseId) ?? throw new InvalidOperationException($"Course with id {command.CourseId} not found.");
+        var course = await _courseRepository.GetByIdAsync(command.CourseId);
+        var professor = await _professorRepository.GetByIdAsync(command.ProfessorId);
+
+        var currentProfessorId = _userContextService.GetProfessorId();
+        if (course.CourseOwner != currentProfessorId)
+        {
+            throw new UnauthorizedAccessException("You must be the course owner");
+        }
+
+        if (professor.WorkPlace != course.University)
+        {
+            throw new InvalidOperationException("Professor must work at the same university as the course");
+        }
+
+        if (professor.DepartmentId != course.Department && professor.DepartmentId is not null)
+        {
+            throw new InvalidOperationException("Professor must be in the same department as the course or not assigned to any department");
+        }
 
         course.CreateSection(command.Name, command.ProfessorId);
 
@@ -60,48 +80,5 @@ public class CreateSectionValidator : Validator<CreateSection>
         _ = RuleFor(x => x.CourseId).NotEmpty();
         _ = RuleFor(x => x.Name).NotEmpty();
         _ = RuleFor(x => x.ProfessorId).NotEmpty();
-
-        _ = RuleFor(x => x.CourseId)
-            .MustAsync(async (courseId, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var course = await courseRepo.GetByIdAsync(courseId);
-                return course is not null;
-            })
-            .WithMessage("Course not found")
-            .MustAsync(async (courseId, ct) =>
-            {
-                return await AuthorizationRules.UserIsCourseOwner(
-                    Resolve<IUserContextService>(),
-                    Resolve<ICourseRepository>(),
-                    courseId);
-            })
-            .WithMessage("You must be the course owner");
-
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var professorRepo = Resolve<IProfessorRepository>();
-
-                var course = await courseRepo.GetByIdAsync(request.CourseId);
-                var professor = await professorRepo.GetByIdAsync(request.ProfessorId);
-
-                return professor?.WorkPlace == course?.University;
-            })
-            .WithMessage("Professor must work at the same university as the course");
-
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var professorRepo = Resolve<IProfessorRepository>();
-
-                var course = await courseRepo.GetByIdAsync(request.CourseId);
-                var professor = await professorRepo.GetByIdAsync(request.ProfessorId);
-
-                return professor?.DepartmentId == course?.Department || professor?.DepartmentId is null;
-            })
-            .WithMessage("Professor must be in the same department as the course or not assigned to any department");
     }
 }

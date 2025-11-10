@@ -33,23 +33,34 @@ public class AssignProfessorToDepartmentHandler : ICommandHandler<AssignProfesso
 {
     private readonly IProfessorRepository _professorRepository;
     private readonly IDepartmentRepository _departmentRepository;
+    private readonly IUniversityRepository _universityRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public AssignProfessorToDepartmentHandler(IProfessorRepository professorRepository, IDepartmentRepository departmentRepository, IUnitOfWork unitOfWork)
+    public AssignProfessorToDepartmentHandler(IProfessorRepository professorRepository, IDepartmentRepository departmentRepository, IUnitOfWork unitOfWork, IUniversityRepository universityRepository, IUserContextService userContextService)
     {
         _professorRepository = professorRepository;
         _departmentRepository = departmentRepository;
         _unitOfWork = unitOfWork;
+        _universityRepository = universityRepository;
+        _userContextService = userContextService;
     }
 
     public async Task<ProfessorId> ExecuteAsync(AssignProfessorToDepartment command, CancellationToken ct)
     {
-        var professor = await _professorRepository.GetByIdAsync(command.ProfessorId) ?? throw new InvalidOperationException($"Professor with id {command.ProfessorId} was not found.");
-        var department = await _departmentRepository.GetByIdAsync(command.DepartmentId) ?? throw new InvalidOperationException($"Department with id {command.DepartmentId} was not found.");
+        var professor = await _professorRepository.GetByIdAsync(command.ProfessorId);
+        var department = await _departmentRepository.GetByIdAsync(command.DepartmentId);
+        var university = await _universityRepository.GetByIdAsync(professor.WorkPlace);
+
+        var presidentId = _userContextService.GetPresidentId();
+        if (university.President != presidentId)
+        {
+            throw new UnauthorizedAccessException("You are not authorized to manage this professor");
+        }
 
         if (professor.WorkPlace != department.UniversityId)
         {
-            throw new InvalidOperationException("Professor can only be assigned to a department in their workplace university.");
+            throw new InvalidOperationException("Professor can only be assigned to a department in their workplace university");
         }
 
         professor.AssignToDepartment(command.DepartmentId);
@@ -63,61 +74,5 @@ public class AssignProfessorToDepartmentHandler : ICommandHandler<AssignProfesso
 
         await _unitOfWork.SaveChangesAsync();
         return professor.Id;
-    }
-}
-
-public class AssignProfessorToDepartmentValidator : Validator<AssignProfessorToDepartment>
-{
-    public AssignProfessorToDepartmentValidator()
-    {
-        _ = RuleFor(x => x.ProfessorId).NotEmpty();
-        _ = RuleFor(x => x.DepartmentId).NotEmpty();
-
-        _ = RuleFor(x => x.ProfessorId)
-            .MustAsync(async (professorId, ct) =>
-            {
-                var professorRepo = Resolve<IProfessorRepository>();
-                var professor = await professorRepo.GetByIdAsync(professorId);
-                return professor is not null;
-            })
-            .WithMessage("Professor not found");
-
-        _ = RuleFor(x => x.DepartmentId)
-            .MustAsync(async (departmentId, ct) =>
-            {
-                var departmentRepo = Resolve<IDepartmentRepository>();
-                var department = await departmentRepo.GetByIdAsync(departmentId);
-                return department is not null;
-            })
-            .WithMessage("Department not found");
-
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
-            {
-                var professorRepo = Resolve<IProfessorRepository>();
-                var universityRepo = Resolve<IUniversityRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var professor = await professorRepo.GetByIdAsync(request.ProfessorId);
-                var university = await universityRepo.GetByIdAsync(professor.WorkPlace);
-                var currentUser = userContext.GetCurrentUser();
-
-                var presidentId = PresidentId.From(currentUser.Id.Value);
-                return university.President == presidentId;
-            })
-            .WithMessage("You are not authorized to manage this professor");
-
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
-            {
-                var professorRepo = Resolve<IProfessorRepository>();
-                var departmentRepo = Resolve<IDepartmentRepository>();
-
-                var professor = await professorRepo.GetByIdAsync(request.ProfessorId);
-                var department = await departmentRepo.GetByIdAsync(request.DepartmentId);
-
-                return professor.WorkPlace == department.UniversityId;
-            })
-            .WithMessage("Professor can only be assigned to a department in their workplace university");
     }
 }

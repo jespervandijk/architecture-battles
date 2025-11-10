@@ -1,6 +1,5 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Exams;
 using AcademicManagement.Domain.Scalars;
@@ -38,16 +37,33 @@ public record CreateExam : ICommand<ExamId>
 public class CreateExamHandler : ICommandHandler<CreateExam, ExamId>
 {
     private readonly IExamRepository _examRepository;
+    private readonly ICourseRepository _courseRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public CreateExamHandler(IExamRepository examRepository, IUnitOfWork unitOfWork)
+    public CreateExamHandler(IExamRepository examRepository, IUnitOfWork unitOfWork, ICourseRepository courseRepository, IUserContextService userContextService)
     {
         _examRepository = examRepository;
         _unitOfWork = unitOfWork;
+        _courseRepository = courseRepository;
+        _userContextService = userContextService;
     }
 
     public async Task<ExamId> ExecuteAsync(CreateExam command, CancellationToken ct)
     {
+        var course = await _courseRepository.GetByIdAsync(command.CourseId);
+        var section = course.Sections.FirstOrDefault(s => s.Id == command.SectionId);
+        if (section is null)
+        {
+            throw new InvalidOperationException("Section not found in this course");
+        }
+
+        var professorId = _userContextService.GetProfessorId();
+        if (section.Professor != professorId)
+        {
+            throw new UnauthorizedAccessException("You must be the professor of this section");
+        }
+
         var exam = Exam.Create(
             command.SectionId,
             command.Title,
@@ -68,40 +84,6 @@ public class CreateExamValidator : Validator<CreateExam>
 {
     public CreateExamValidator()
     {
-        _ = RuleFor(x => x.SectionId).NotEmpty();
-        _ = RuleFor(x => x.CourseId).NotEmpty();
-        _ = RuleFor(x => x.Title).NotEmpty();
         _ = RuleFor(x => x.Duration).GreaterThan(TimeSpan.Zero);
-        _ = RuleFor(x => x.GradeWeight).NotEmpty();
-        _ = RuleFor(x => x.SchoolYear).NotEmpty();
-        _ = RuleFor(x => x.DocumentUrl).NotEmpty();
-
-        _ = RuleFor(x => x.CourseId)
-            .MustAsync(async (courseId, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var course = await courseRepo.GetByIdAsync(courseId);
-                return course is not null;
-            })
-            .WithMessage("Course not found");
-
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-
-                var course = await courseRepo.GetByIdAsync(request.CourseId);
-                return course?.Sections.Any(s => s.Id == request.SectionId) == true;
-            })
-            .WithMessage("Section not found in this course")
-            .MustAsync(async (request, ct) =>
-            {
-                return await AuthorizationRules.UserIsSectionProfessor(
-                    Resolve<IUserContextService>(),
-                    Resolve<ICourseRepository>(),
-                    request.CourseId,
-                    request.SectionId);
-            })
-            .WithMessage("You must be the professor of this section");
     }
 }

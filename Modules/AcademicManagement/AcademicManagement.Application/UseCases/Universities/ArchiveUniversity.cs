@@ -1,6 +1,5 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Universities;
 using FastEndpoints;
 using FluentValidation;
@@ -30,19 +29,23 @@ public class ArchiveUniversityHandler : ICommandHandler<ArchiveUniversity, Unive
 {
     private readonly IUniversityRepository _universityRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public ArchiveUniversityHandler(IUniversityRepository universityRepository, IUnitOfWork unitOfWork)
+    public ArchiveUniversityHandler(IUniversityRepository universityRepository, IUnitOfWork unitOfWork, IUserContextService userContextService)
     {
         _universityRepository = universityRepository;
         _unitOfWork = unitOfWork;
+        _userContextService = userContextService;
     }
 
     public async Task<UniversityId> ExecuteAsync(ArchiveUniversity command, CancellationToken ct)
     {
         var university = await _universityRepository.GetByIdAsync(command.UniversityId);
-        if (university == null)
+
+        var presidentId = _userContextService.GetPresidentId();
+        if (university.President != presidentId)
         {
-            throw new InvalidOperationException($"University with id {command.UniversityId} not found.");
+            throw new UnauthorizedAccessException("You must be the president of this university");
         }
 
         university.IsArchived = true;
@@ -52,29 +55,3 @@ public class ArchiveUniversityHandler : ICommandHandler<ArchiveUniversity, Unive
         return university.Id;
     }
 }
-
-public class ArchiveUniversityValidator : Validator<ArchiveUniversity>
-{
-    public ArchiveUniversityValidator()
-    {
-        _ = RuleFor(x => x.UniversityId)
-            .NotEmpty()
-            .MustAsync(async (universityId, ct) =>
-            {
-                var universityRepo = Resolve<IUniversityRepository>();
-                var university = await universityRepo.GetByIdAsync(universityId);
-                return university is not null;
-            })
-            .WithMessage("University not found")
-            .MustAsync(async (universityId, ct) =>
-            {
-                return await AuthorizationRules.UserIsPresidentOfUniversity(
-                    Resolve<IUserContextService>(),
-                    Resolve<IUniversityRepository>(),
-                    universityId);
-            })
-            .WithMessage("You must be the president of this university");
-    }
-}
-
-

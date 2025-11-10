@@ -1,10 +1,8 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
-using FluentValidation;
 
 namespace AcademicManagement.Application.UseCases.Presidents;
 
@@ -33,44 +31,28 @@ public class UpdatePresidentHandler : ICommandHandler<UpdatePresident, President
 {
     private readonly IPresidentRepository _presidentRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public UpdatePresidentHandler(IPresidentRepository presidentRepository, IUnitOfWork unitOfWork)
+    public UpdatePresidentHandler(IPresidentRepository presidentRepository, IUnitOfWork unitOfWork, IUserContextService userContextService)
     {
         _presidentRepository = presidentRepository;
         _unitOfWork = unitOfWork;
+        _userContextService = userContextService;
     }
 
     public async Task<PresidentId> ExecuteAsync(UpdatePresident command, CancellationToken ct)
     {
-        var president = await _presidentRepository.GetByIdAsync(command.PresidentId) ?? throw new InvalidOperationException($"President with id {command.PresidentId} was not found.");
+        var president = await _presidentRepository.GetByIdAsync(command.PresidentId);
+
+        var presidentId = _userContextService.GetPresidentId();
+        if (president.Id != presidentId)
+        {
+            throw new UnauthorizedAccessException("You can only update your own president profile");
+        }
+
         president.Update(command.FirstName, command.LastName);
         _presidentRepository.Update(president);
         await _unitOfWork.SaveChangesAsync();
         return president.Id;
-    }
-}
-
-public class UpdatePresidentValidator : Validator<UpdatePresident>
-{
-    public UpdatePresidentValidator()
-    {
-        _ = RuleFor(x => x.FirstName).NotEmpty();
-        _ = RuleFor(x => x.LastName).NotEmpty();
-        _ = RuleFor(x => x.PresidentId)
-            .NotEmpty()
-            .MustAsync(async (presidentId, ct) =>
-            {
-                var presidentRepo = Resolve<IPresidentRepository>();
-                var president = await presidentRepo.GetByIdAsync(presidentId);
-                return president is not null;
-            })
-            .WithMessage("President not found")
-            .Must((presidentId) =>
-            {
-                return AuthorizationRules.UserIsPresident(
-                    Resolve<IUserContextService>(),
-                    presidentId);
-            })
-            .WithMessage("You can only update your own president profile");
     }
 }

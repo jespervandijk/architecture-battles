@@ -3,7 +3,6 @@ using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Professors;
 using FastEndpoints;
-using FluentValidation;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -30,72 +29,40 @@ public record RemoveProfessorFromCourse : ICommand<CourseId>
 public class RemoveProfessorFromCourseHandler : ICommandHandler<RemoveProfessorFromCourse, CourseId>
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly IDepartmentRepository _departmentRepository;
+    private readonly IProfessorRepository _professorRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public RemoveProfessorFromCourseHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork)
+    public RemoveProfessorFromCourseHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IDepartmentRepository departmentRepository, IProfessorRepository professorRepository, IUserContextService userContextService)
     {
         _courseRepository = courseRepository;
         _unitOfWork = unitOfWork;
+        _departmentRepository = departmentRepository;
+        _professorRepository = professorRepository;
+        _userContextService = userContextService;
     }
 
     public async Task<CourseId> ExecuteAsync(RemoveProfessorFromCourse command, CancellationToken ct)
     {
-        var course = await _courseRepository.GetByIdAsync(command.CourseId) ?? throw new InvalidOperationException($"Course with id {command.CourseId} was not found.");
+        var course = await _courseRepository.GetByIdAsync(command.CourseId);
+        _ = await _professorRepository.GetByIdAsync(command.ProfessorId);
+        var department = await _departmentRepository.GetByIdAsync(course.Department);
+
+        var currentProfessorId = _userContextService.GetProfessorId();
+        if (department.HeadOfDepartment != currentProfessorId)
+        {
+            throw new UnauthorizedAccessException("Only the head of department can remove professors from courses");
+        }
+
+        if (course.CourseOwner == command.ProfessorId)
+        {
+            throw new InvalidOperationException("Cannot remove the course owner. Please assign a new course owner first using the assign professor endpoint.");
+        }
+
         course.RemoveProfessor(command.ProfessorId);
         _courseRepository.Update(course);
         await _unitOfWork.SaveChangesAsync();
         return course.Id;
-    }
-}
-
-public class RemoveProfessorFromCourseValidator : Validator<RemoveProfessorFromCourse>
-{
-    public RemoveProfessorFromCourseValidator()
-    {
-        _ = RuleFor(x => x.CourseId).NotEmpty();
-        _ = RuleFor(x => x.ProfessorId).NotEmpty();
-
-        _ = RuleFor(x => x.CourseId)
-            .MustAsync(async (courseId, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var course = await courseRepo.GetByIdAsync(courseId);
-                return course is not null;
-            })
-            .WithMessage("Course not found");
-
-        _ = RuleFor(x => x.ProfessorId)
-            .MustAsync(async (professorId, ct) =>
-            {
-                var professorRepo = Resolve<IProfessorRepository>();
-                var professor = await professorRepo.GetByIdAsync(professorId);
-                return professor is not null;
-            })
-            .WithMessage("Professor not found");
-
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var departmentRepo = Resolve<IDepartmentRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var course = await courseRepo.GetByIdAsync(request.CourseId);
-                var department = await departmentRepo.GetByIdAsync(course.Department);
-                var currentUser = userContext.GetCurrentUser();
-
-                var currentProfessorId = ProfessorId.From(currentUser.Id.Value);
-                return department.HeadOfDepartment == currentProfessorId;
-            })
-            .WithMessage("Only the head of department can remove professors from courses");
-
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var course = await courseRepo.GetByIdAsync(request.CourseId);
-                return course.CourseOwner != request.ProfessorId;
-            })
-            .WithMessage("Cannot remove the course owner. Please assign a new course owner first using the assign professor endpoint.");
     }
 }

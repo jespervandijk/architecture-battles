@@ -14,10 +14,16 @@ namespace AcademicManagement.Application.UseCases.Courses;
 public class GetAllCoursesEndpoint : Endpoint<GetCourses, IReadOnlyList<CourseDto>>
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly IUniversityRepository _universityRepository;
+    private readonly IProfessorRepository _professorRepository;
+    private readonly IUserContextService _userContextService;
 
-    public GetAllCoursesEndpoint(ICourseRepository courseRepository)
+    public GetAllCoursesEndpoint(ICourseRepository courseRepository, IUniversityRepository universityRepository, IProfessorRepository professorRepository, IUserContextService userContextService)
     {
         _courseRepository = courseRepository;
+        _universityRepository = universityRepository;
+        _professorRepository = professorRepository;
+        _userContextService = userContextService;
     }
 
     public override void Configure()
@@ -28,6 +34,26 @@ public class GetAllCoursesEndpoint : Endpoint<GetCourses, IReadOnlyList<CourseDt
 
     public override async Task HandleAsync(GetCourses req, CancellationToken ct)
     {
+        var currentUser = _userContextService.GetCurrentUser();
+
+        if (currentUser.Role == UserRole.President)
+        {
+            var university = await _universityRepository.GetByIdAsync(req.UniversityId);
+            var presidentId = PresidentId.From(currentUser.Id.Value);
+            if (university.President != presidentId)
+            {
+                throw new UnauthorizedAccessException("You can only view courses from your own university");
+            }
+        }
+        else if (currentUser.Role == UserRole.Professor)
+        {
+            var professor = await _professorRepository.GetByIdAsync(ProfessorId.From(currentUser.Id.Value));
+            if (professor.WorkPlace != req.UniversityId)
+            {
+                throw new UnauthorizedAccessException("You can only view courses from your own university");
+            }
+        }
+
         var courses = await _courseRepository.GetAllAsync();
         var filteredCourses = courses.Where(course =>
             course.University == req.UniversityId &&
@@ -47,35 +73,4 @@ public record GetCourses
     public ProfessorId? CourseOwnerId { get; init; }
     public ProfessorId? ProfessorId { get; init; }
     public Name? Title { get; init; }
-}
-
-public class GetCoursesValidator : Validator<GetCourses>
-{
-    public GetCoursesValidator()
-    {
-        _ = RuleFor(x => x.UniversityId)
-            .NotEmpty()
-            .MustAsync(async (universityId, ct) =>
-            {
-                var userContext = Resolve<IUserContextService>();
-                var currentUser = userContext.GetCurrentUser();
-
-                if (currentUser.Role == UserRole.President)
-                {
-                    var universityRepo = Resolve<IUniversityRepository>();
-                    var university = await universityRepo.GetByIdAsync(universityId);
-                    var presidentId = PresidentId.From(currentUser.Id.Value);
-                    return university?.President == presidentId;
-                }
-                else if (currentUser.Role == UserRole.Professor)
-                {
-                    var professorRepo = Resolve<IProfessorRepository>();
-                    var professor = await professorRepo.GetByIdAsync(ProfessorId.From(currentUser.Id.Value));
-                    return professor?.WorkPlace == universityId;
-                }
-
-                return false;
-            })
-            .WithMessage("You can only view courses from your own university");
-    }
 }

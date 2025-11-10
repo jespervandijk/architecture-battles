@@ -52,13 +52,3 @@ public class CreatePresidentHandler : ICommandHandler<CreatePresident, President
         return president.Id;
     }
 }
-
-public class CreatePresidentValidator : Validator<CreatePresident>
-{
-    public CreatePresidentValidator()
-    {
-        _ = RuleFor(x => x.FirstName).NotEmpty();
-        _ = RuleFor(x => x.LastName).NotEmpty();
-        _ = RuleFor(x => x.UserName).NotEmpty();
-    }
-}

@@ -40,17 +40,40 @@ public class CreateProfessorHandler : ICommandHandler<CreateProfessor, Professor
 {
     private readonly IProfessorRepository _professorRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IUniversityRepository _universityRepository;
+    private readonly IDepartmentRepository _departmentRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public CreateProfessorHandler(IProfessorRepository professorRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public CreateProfessorHandler(IProfessorRepository professorRepository, IUserRepository userRepository, IUnitOfWork unitOfWork, IUniversityRepository universityRepository, IDepartmentRepository departmentRepository, IUserContextService userContextService)
     {
         _professorRepository = professorRepository;
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
+        _universityRepository = universityRepository;
+        _departmentRepository = departmentRepository;
+        _userContextService = userContextService;
     }
 
     public async Task<ProfessorId> ExecuteAsync(CreateProfessor command, CancellationToken ct)
     {
+        var university = await _universityRepository.GetByIdAsync(command.WorkPlace);
+
+        var presidentId = _userContextService.GetPresidentId();
+        if (university.President != presidentId)
+        {
+            throw new UnauthorizedAccessException("You are not authorized to create professors for this university");
+        }
+
+        if (command.DepartmentId is not null)
+        {
+            var department = await _departmentRepository.GetByIdAsync(command.DepartmentId.Value);
+            if (department.UniversityId != command.WorkPlace)
+            {
+                throw new InvalidOperationException("Department must belong to the same university as the professor's workplace");
+            }
+        }
+
         var userName = UserName.From(command.UserName);
         var user = User.Create(userName, UserRole.Professor);
         _userRepository.Insert(user);
@@ -67,65 +90,5 @@ public class CreateProfessorHandler : ICommandHandler<CreateProfessor, Professor
         _professorRepository.Insert(professor);
         await _unitOfWork.SaveChangesAsync();
         return professor.Id;
-    }
-}
-
-public class CreateProfessorValidator : Validator<CreateProfessor>
-{
-    public CreateProfessorValidator()
-    {
-        _ = RuleFor(x => x.UserName).NotEmpty();
-        _ = RuleFor(x => x.FirstName).NotEmpty();
-        _ = RuleFor(x => x.LastName).NotEmpty();
-        _ = RuleFor(x => x.EmailAddress).NotEmpty();
-        _ = RuleFor(x => x.Rank).IsInEnum();
-        _ = RuleFor(x => x.WorkPlace).NotEmpty();
-
-        _ = RuleFor(x => x.WorkPlace)
-            .MustAsync(async (workPlace, ct) =>
-            {
-                var universityRepo = Resolve<IUniversityRepository>();
-                var university = await universityRepo.GetByIdAsync(workPlace);
-                return university is not null;
-            })
-            .WithMessage("University not found")
-            .MustAsync(async (workPlace, ct) =>
-            {
-                var universityRepo = Resolve<IUniversityRepository>();
-                var userContext = Resolve<IUserContextService>();
-
-                var university = await universityRepo.GetByIdAsync(workPlace);
-                var currentUser = userContext.GetCurrentUser();
-
-                var presidentId = PresidentId.From(currentUser.Id.Value);
-                return university.President == presidentId;
-            })
-            .WithMessage("You are not authorized to create professors for this university");
-
-        _ = RuleFor(x => x.DepartmentId)
-            .MustAsync(async (departmentId, ct) =>
-            {
-                var departmentRepo = Resolve<IDepartmentRepository>();
-                var department = await departmentRepo.GetByIdAsync(departmentId!.Value);
-                return department is not null;
-            })
-            .When(x => x.DepartmentId is not null)
-            .WithMessage("Department not found");
-
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
-            {
-                if (request.DepartmentId is null)
-                {
-                    return true;
-                }
-
-                var departmentRepo = Resolve<IDepartmentRepository>();
-                var department = await departmentRepo.GetByIdAsync(request.DepartmentId.Value);
-
-                return department.UniversityId == request.WorkPlace;
-            })
-            .When(x => x.DepartmentId is not null)
-            .WithMessage("Department must belong to the same university as the professor's workplace");
     }
 }

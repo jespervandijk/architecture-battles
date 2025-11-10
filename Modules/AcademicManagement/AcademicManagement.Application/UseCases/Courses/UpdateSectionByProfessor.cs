@@ -1,9 +1,7 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
 using FastEndpoints;
-using FluentValidation;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -33,58 +31,33 @@ public class UpdateSectionByProfessorHandler : ICommandHandler<UpdateSectionByPr
 {
     private readonly ICourseRepository _courseRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public UpdateSectionByProfessorHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork)
+    public UpdateSectionByProfessorHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IUserContextService userContextService)
     {
         _courseRepository = courseRepository;
         _unitOfWork = unitOfWork;
+        _userContextService = userContextService;
     }
 
     public async Task ExecuteAsync(UpdateSectionByProfessor command, CancellationToken ct)
     {
-        var course = await _courseRepository.GetByIdAsync(command.CourseId) ?? throw new InvalidOperationException($"Course with id {command.CourseId} not found.");
+        var course = await _courseRepository.GetByIdAsync(command.CourseId);
+        var section = course.Sections.FirstOrDefault(s => s.Id == command.SectionId);
+        if (section is null)
+        {
+            throw new InvalidOperationException("Section not found in this course");
+        }
+
+        var professorId = _userContextService.GetProfessorId();
+        if (section.Professor != professorId)
+        {
+            throw new UnauthorizedAccessException("You must be the professor of this section");
+        }
 
         course.UpdateSectionDetails(command.SectionId, command.Name, command.TeachingMaterialsUrl);
 
         _courseRepository.Update(course);
         await _unitOfWork.SaveChangesAsync();
-    }
-}
-
-public class UpdateSectionByProfessorValidator : Validator<UpdateSectionByProfessor>
-{
-    public UpdateSectionByProfessorValidator()
-    {
-        _ = RuleFor(x => x.SectionId).NotEmpty();
-        _ = RuleFor(x => x.CourseId).NotEmpty();
-        _ = RuleFor(x => x.Name).NotEmpty();
-
-        _ = RuleFor(x => x.CourseId)
-            .MustAsync(async (courseId, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var course = await courseRepo.GetByIdAsync(courseId);
-                return course is not null;
-            })
-            .WithMessage("Course not found");
-
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-
-                var course = await courseRepo.GetByIdAsync(request.CourseId);
-                return course?.Sections.Any(s => s.Id == request.SectionId) == true;
-            })
-            .WithMessage("Section not found in this course")
-            .MustAsync(async (request, ct) =>
-            {
-                return await AuthorizationRules.UserIsSectionProfessor(
-                    Resolve<IUserContextService>(),
-                    Resolve<ICourseRepository>(),
-                    request.CourseId,
-                    request.SectionId);
-            })
-            .WithMessage("You must be the professor of this section");
     }
 }

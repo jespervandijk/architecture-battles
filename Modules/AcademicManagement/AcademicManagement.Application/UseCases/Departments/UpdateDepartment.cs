@@ -1,11 +1,9 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
-using FluentValidation;
 
 namespace AcademicManagement.Application.UseCases.Departments;
 
@@ -33,47 +31,32 @@ public record UpdateDepartment : ICommand<DepartmentId>
 public class UpdateDepartmentHandler : ICommandHandler<UpdateDepartment, DepartmentId>
 {
     private readonly IDepartmentRepository _departmentRepository;
+    private readonly IUniversityRepository _universityRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public UpdateDepartmentHandler(IDepartmentRepository departmentRepository, IUnitOfWork unitOfWork)
+    public UpdateDepartmentHandler(IDepartmentRepository departmentRepository, IUnitOfWork unitOfWork, IUniversityRepository universityRepository, IUserContextService userContextService)
     {
         _departmentRepository = departmentRepository;
         _unitOfWork = unitOfWork;
+        _universityRepository = universityRepository;
+        _userContextService = userContextService;
     }
 
     public async Task<DepartmentId> ExecuteAsync(UpdateDepartment command, CancellationToken ct)
     {
-        var department = await _departmentRepository.GetByIdAsync(command.DepartmentId) ?? throw new InvalidOperationException($"Department with id {command.DepartmentId} was not found.");
+        var department = await _departmentRepository.GetByIdAsync(command.DepartmentId);
+        var university = await _universityRepository.GetByIdAsync(department.UniversityId);
+
+        var presidentId = _userContextService.GetPresidentId();
+        if (university.President != presidentId)
+        {
+            throw new UnauthorizedAccessException("You must be the president of the university that owns this department");
+        }
+
         department.Update(command.Name, command.HeadOfDepartment);
         _departmentRepository.Update(department);
         await _unitOfWork.SaveChangesAsync();
         return department.Id;
-    }
-}
-
-public class UpdateDepartmentValidator : Validator<UpdateDepartment>
-{
-    public UpdateDepartmentValidator()
-    {
-        _ = RuleFor(x => x.Name).NotEmpty();
-        _ = RuleFor(x => x.HeadOfDepartment).NotEmpty();
-        _ = RuleFor(x => x.DepartmentId)
-            .NotEmpty()
-            .MustAsync(async (departmentId, ct) =>
-            {
-                var departmentRepo = Resolve<IDepartmentRepository>();
-                var department = await departmentRepo.GetByIdAsync(departmentId);
-                return department is not null;
-            })
-            .WithMessage("Department not found")
-            .MustAsync(async (departmentId, ct) =>
-            {
-                return await AuthorizationRules.UserIsPresidentOfDepartmentUniversity(
-                    Resolve<IUserContextService>(),
-                    Resolve<IDepartmentRepository>(),
-                    Resolve<IUniversityRepository>(),
-                    departmentId);
-            })
-            .WithMessage("You must be the president of the university that owns this department");
     }
 }

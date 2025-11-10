@@ -4,7 +4,6 @@ using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
-using FluentValidation;
 
 namespace AcademicManagement.Application.UseCases.Universities;
 
@@ -45,14 +44,5 @@ public class CreateUniversityHandler : ICommandHandler<CreateUniversity, Univers
         _universityRepository.Insert(university);
         await _unitOfWork.SaveChangesAsync();
         return university.Id;
-    }
-}
-
-public class CreateUniversityValidator : Validator<CreateUniversity>
-{
-    public CreateUniversityValidator()
-    {
-        _ = RuleFor(x => x.Name).NotEmpty();
-        _ = RuleFor(x => x.President).NotEmpty();
     }
 }

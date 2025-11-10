@@ -1,6 +1,5 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Professors;
 using FastEndpoints;
 using FluentValidation;
@@ -34,49 +33,32 @@ public record UpdateProfessor : ICommand<ProfessorId>
 public class UpdateProfessorHandler : ICommandHandler<UpdateProfessor, ProfessorId>
 {
     private readonly IProfessorRepository _professorRepository;
+    private readonly IUniversityRepository _universityRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public UpdateProfessorHandler(IProfessorRepository professorRepository, IUnitOfWork unitOfWork)
+    public UpdateProfessorHandler(IProfessorRepository professorRepository, IUnitOfWork unitOfWork, IUniversityRepository universityRepository, IUserContextService userContextService)
     {
         _professorRepository = professorRepository;
         _unitOfWork = unitOfWork;
+        _universityRepository = universityRepository;
+        _userContextService = userContextService;
     }
 
     public async Task<ProfessorId> ExecuteAsync(UpdateProfessor command, CancellationToken ct)
     {
-        var professor = await _professorRepository.GetByIdAsync(command.ProfessorId) ?? throw new InvalidOperationException($"Professor with id {command.ProfessorId} was not found.");
+        var professor = await _professorRepository.GetByIdAsync(command.ProfessorId);
+        var university = await _universityRepository.GetByIdAsync(professor.WorkPlace);
+
+        var presidentId = _userContextService.GetPresidentId();
+        if (university.President != presidentId)
+        {
+            throw new UnauthorizedAccessException("You must be the president of the university where this professor works");
+        }
+
         professor.Update(command.FirstName, command.LastName, command.EmailAddress, command.Rank);
         _professorRepository.Update(professor);
         await _unitOfWork.SaveChangesAsync();
         return professor.Id;
-    }
-}
-
-public class UpdateProfessorValidator : Validator<UpdateProfessor>
-{
-    public UpdateProfessorValidator()
-    {
-        _ = RuleFor(x => x.FirstName).NotEmpty();
-        _ = RuleFor(x => x.LastName).NotEmpty();
-        _ = RuleFor(x => x.EmailAddress).NotEmpty();
-        _ = RuleFor(x => x.Rank).IsInEnum();
-        _ = RuleFor(x => x.ProfessorId)
-            .NotEmpty()
-            .MustAsync(async (professorId, ct) =>
-            {
-                var professorRepo = Resolve<IProfessorRepository>();
-                var professor = await professorRepo.GetByIdAsync(professorId);
-                return professor is not null;
-            })
-            .WithMessage("Professor not found")
-            .MustAsync(async (professorId, ct) =>
-            {
-                return await AuthorizationRules.UserIsPresidentOfProfessorUniversity(
-                    Resolve<IUserContextService>(),
-                    Resolve<IProfessorRepository>(),
-                    Resolve<IUniversityRepository>(),
-                    professorId);
-            })
-            .WithMessage("You must be the president of the university where this professor works");
     }
 }

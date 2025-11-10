@@ -1,10 +1,8 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
-using FluentValidation;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -34,45 +32,28 @@ public class UpdateCourseDetailsByCourseOwnerHandler : ICommandHandler<UpdateCou
 {
     private readonly ICourseRepository _courseRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public UpdateCourseDetailsByCourseOwnerHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork)
+    public UpdateCourseDetailsByCourseOwnerHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IUserContextService userContextService)
     {
         _courseRepository = courseRepository;
         _unitOfWork = unitOfWork;
+        _userContextService = userContextService;
     }
 
     public async Task<CourseId> ExecuteAsync(UpdateCourseDetailsByCourseOwner command, CancellationToken ct)
     {
-        var course = await _courseRepository.GetByIdAsync(command.CourseId) ?? throw new InvalidOperationException($"Course with id {command.CourseId} was not found.");
+        var course = await _courseRepository.GetByIdAsync(command.CourseId);
+
+        var professorId = _userContextService.GetProfessorId();
+        if (course.CourseOwner != professorId)
+        {
+            throw new UnauthorizedAccessException("You must be the course owner");
+        }
+
         course.UpdateCourseDetails(command.Title, command.Description, command.MaxCapacity);
         _courseRepository.Update(course);
         await _unitOfWork.SaveChangesAsync();
         return course.Id;
-    }
-}
-
-public class UpdateCourseDetailsByCourseOwnerValidator : Validator<UpdateCourseDetailsByCourseOwner>
-{
-    public UpdateCourseDetailsByCourseOwnerValidator()
-    {
-        _ = RuleFor(x => x.CourseId).NotEmpty();
-        _ = RuleFor(x => x.Title).NotEmpty();
-
-        _ = RuleFor(x => x.CourseId)
-            .MustAsync(async (courseId, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var course = await courseRepo.GetByIdAsync(courseId);
-                return course is not null;
-            })
-            .WithMessage("Course not found")
-            .MustAsync(async (courseId, ct) =>
-            {
-                return await AuthorizationRules.UserIsCourseOwner(
-                    Resolve<IUserContextService>(),
-                    Resolve<ICourseRepository>(),
-                    courseId);
-            })
-            .WithMessage("You must be the course owner");
     }
 }

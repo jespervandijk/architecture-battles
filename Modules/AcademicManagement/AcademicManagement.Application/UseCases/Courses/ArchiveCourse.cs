@@ -1,9 +1,7 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
 using FastEndpoints;
-using FluentValidation;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -29,44 +27,31 @@ public record ArchiveCourse : ICommand
 public class ArchiveCourseHandler : ICommandHandler<ArchiveCourse>
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly IDepartmentRepository _departmentRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public ArchiveCourseHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork)
+    public ArchiveCourseHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IDepartmentRepository departmentRepository, IUserContextService userContextService)
     {
         _courseRepository = courseRepository;
         _unitOfWork = unitOfWork;
+        _departmentRepository = departmentRepository;
+        _userContextService = userContextService;
     }
 
     public async Task ExecuteAsync(ArchiveCourse command, CancellationToken ct)
     {
-        var course = await _courseRepository.GetByIdAsync(command.CourseId) ?? throw new InvalidOperationException("Course not found");
+        var course = await _courseRepository.GetByIdAsync(command.CourseId);
+        var department = await _departmentRepository.GetByIdAsync(course.Department);
+
+        var professorId = _userContextService.GetProfessorId();
+        if (department.HeadOfDepartment != professorId)
+        {
+            throw new UnauthorizedAccessException("You must be the head of the department that owns this course.");
+        }
+
         course.Archive();
         _courseRepository.Update(course);
         await _unitOfWork.SaveChangesAsync();
-    }
-}
-
-public class ArchiveCourseValidator : Validator<ArchiveCourse>
-{
-    public ArchiveCourseValidator()
-    {
-        _ = RuleFor(x => x.CourseId)
-            .NotEmpty()
-            .MustAsync(async (courseId, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var course = await courseRepo.GetByIdAsync(courseId);
-                return course is not null;
-            })
-            .WithMessage("Course not found")
-            .MustAsync(async (courseId, ct) =>
-            {
-                return await AuthorizationRules.UserIsHeadOfCourseDepartment(
-                    Resolve<IUserContextService>(),
-                    Resolve<ICourseRepository>(),
-                    Resolve<IDepartmentRepository>(),
-                    courseId);
-            })
-            .WithMessage("You must be the head of the department that owns this course");
     }
 }

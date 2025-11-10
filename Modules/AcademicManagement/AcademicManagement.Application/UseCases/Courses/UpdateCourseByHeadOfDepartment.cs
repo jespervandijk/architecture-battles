@@ -1,11 +1,9 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
-using AcademicManagement.Application.Validation;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
-using FluentValidation;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -36,73 +34,40 @@ public record UpdateCourseByHeadOfDepartment : ICommand<CourseId>
 public class UpdateCourseByHeadOfDepartmentHandler : ICommandHandler<UpdateCourseByHeadOfDepartment, CourseId>
 {
     private readonly ICourseRepository _courseRepository;
+    private readonly IDepartmentRepository _departmentRepository;
+    private readonly IProfessorRepository _professorRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserContextService _userContextService;
 
-    public UpdateCourseByHeadOfDepartmentHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork)
+    public UpdateCourseByHeadOfDepartmentHandler(ICourseRepository courseRepository, IUnitOfWork unitOfWork, IDepartmentRepository departmentRepository, IProfessorRepository professorRepository, IUserContextService userContextService)
     {
         _courseRepository = courseRepository;
         _unitOfWork = unitOfWork;
+        _departmentRepository = departmentRepository;
+        _professorRepository = professorRepository;
+        _userContextService = userContextService;
     }
 
     public async Task<CourseId> ExecuteAsync(UpdateCourseByHeadOfDepartment command, CancellationToken ct)
     {
-        var course = await _courseRepository.GetByIdAsync(command.CourseId) ?? throw new InvalidOperationException($"Course with id {command.CourseId} was not found.");
+        var course = await _courseRepository.GetByIdAsync(command.CourseId);
+        var department = await _departmentRepository.GetByIdAsync(course.Department);
+        var courseOwnerProfessor = await _professorRepository.GetByIdAsync(command.CourseOwner);
+
+        var currentProfessorId = _userContextService.GetProfessorId();
+        if (department.HeadOfDepartment != currentProfessorId)
+        {
+            throw new UnauthorizedAccessException("You must be the head of the department that owns this course");
+        }
+
+        if (courseOwnerProfessor.DepartmentId != course.Department)
+        {
+            throw new InvalidOperationException("Course owner must be assigned to the course's department");
+        }
+
         course.UpdateCourse(command.CourseOwner, command.Title, command.Description, command.Credits, command.MaxCapacity);
         _courseRepository.Update(course);
         await _unitOfWork.SaveChangesAsync();
         return course.Id;
-    }
-}
-
-public class UpdateCourseByHeadOfDepartmentValidator : Validator<UpdateCourseByHeadOfDepartment>
-{
-    public UpdateCourseByHeadOfDepartmentValidator()
-    {
-        _ = RuleFor(x => x.CourseId).NotEmpty();
-        _ = RuleFor(x => x.CourseOwner).NotEmpty();
-        _ = RuleFor(x => x.Title).NotEmpty();
-        _ = RuleFor(x => x.Credits).Must(c => c.Value > 0).WithMessage("Credits must be greater than zero.");
-
-        _ = RuleFor(x => x.CourseId)
-            .MustAsync(async (courseId, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var course = await courseRepo.GetByIdAsync(courseId);
-                return course is not null;
-            })
-            .WithMessage("Course not found");
-
-        _ = RuleFor(x => x.CourseOwner)
-            .MustAsync(async (courseOwner, ct) =>
-            {
-                var professorRepo = Resolve<IProfessorRepository>();
-                var professor = await professorRepo.GetByIdAsync(courseOwner);
-                return professor is not null;
-            })
-            .WithMessage("Professor not found");
-
-        _ = RuleFor(x => x.CourseId)
-            .MustAsync(async (courseId, ct) =>
-            {
-                return await AuthorizationRules.UserIsHeadOfCourseDepartment(
-                    Resolve<IUserContextService>(),
-                    Resolve<ICourseRepository>(),
-                    Resolve<IDepartmentRepository>(),
-                    courseId);
-            })
-            .WithMessage("You must be the head of the department that owns this course");
-
-        _ = RuleFor(x => x)
-            .MustAsync(async (request, ct) =>
-            {
-                var courseRepo = Resolve<ICourseRepository>();
-                var professorRepo = Resolve<IProfessorRepository>();
-
-                var course = await courseRepo.GetByIdAsync(request.CourseId);
-                var professor = await professorRepo.GetByIdAsync(request.CourseOwner);
-
-                return professor.DepartmentId == course.Department;
-            })
-            .WithMessage("Course owner must be assigned to the course's department");
     }
 }
