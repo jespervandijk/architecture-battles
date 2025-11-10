@@ -55,3 +55,6 @@ dotnet_diagnostic.CA2254.severity = none
 
 # RCS1161: Enum should declare explicit values
 dotnet_diagnostic.RCS1161.severity = none
+
+# IDE0046: Convert to conditional expression
+dotnet_diagnostic.IDE0046.severity = none
