@@ -18,6 +18,10 @@
     <ProjectReference Include="../Modules/StudentEnrollment/StudentEnrollment.Application/StudentEnrollment.Application.csproj" />
     <ProjectReference Include="../Modules/StudentEnrollment/StudentEnrollment.Domain/StudentEnrollment.Domain.csproj" />
     <ProjectReference Include="../Modules/StudentEnrollment/StudentEnrollment.Infrastructure/StudentEnrollment.Infrastructure.csproj" />
+    <ProjectReference Include="..\Integration\Integration.csproj" />
+    <ProjectReference Include="..\Modules\OfficialAcademicRegistration\OfficialAcademicRegistration.Application\OfficialAcademicRegistration.Application.csproj" />
+    <ProjectReference Include="..\Modules\OfficialAcademicRegistration\OfficialAcademicRegistration.Domain\OfficialAcademicRegistration.Domain.csproj" />
+    <ProjectReference Include="..\Modules\OfficialAcademicRegistration\OfficialAcademicRegistration.Infrastructure\OfficialAcademicRegistration.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
