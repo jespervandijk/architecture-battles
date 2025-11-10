@@ -17,6 +17,11 @@ public class CreateExamEndpoint : Endpoint<CreateExam, ExamId>
         Post("/exams");
         Policies(PolicyAcademicManagement.ProfessorOnly);
     }
+
+    public override async Task HandleAsync(CreateExam req, CancellationToken ct)
+    {
+        Response = await req.ExecuteAsync(ct);
+    }
 }
 
 public record CreateExam : ICommand<ExamId>
