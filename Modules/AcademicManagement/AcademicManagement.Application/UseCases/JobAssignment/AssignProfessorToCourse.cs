@@ -5,7 +5,7 @@ using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Services;
 using FastEndpoints;
 
-namespace AcademicManagement.Application.UseCases.Courses;
+namespace AcademicManagement.Application.UseCases.JobAssignment;
 
 public class AssignProfessorToCourseEndpoint : Endpoint<AssignProfessorToCourse, CourseId>
 {
