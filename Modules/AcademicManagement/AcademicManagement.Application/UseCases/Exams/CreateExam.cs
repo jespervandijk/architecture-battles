@@ -52,11 +52,7 @@ public class CreateExamHandler : ICommandHandler<CreateExam, ExamId>
     public async Task<ExamId> ExecuteAsync(CreateExam command, CancellationToken ct)
     {
         var course = await _courseRepository.GetByIdAsync(command.CourseId);
-        var section = course.Sections.FirstOrDefault(s => s.Id == command.SectionId);
-        if (section is null)
-        {
-            throw new InvalidOperationException("Section not found in this course");
-        }
+        var section = course.GetSection(command.SectionId);
 
         var professorId = _userContextService.GetProfessorId();
         if (section.Professor != professorId)
