@@ -9,11 +9,12 @@ public sealed class Assignment
 {
     public AssignmentId Id { get; init; }
     public SectionId SectionId { get; init; }
-    public Name Title { get; set; }
-    public GradeWeight GradeWeight { get; set; }
-    public Url DocumentUrl { get; set; }
-    public Year SchoolYear { get; set; }
-    public List<AssignmentResult> AssignmentResults { get; set; }
+    public Name Title { get; private set; }
+    public GradeWeight GradeWeight { get; private set; }
+    public Url DocumentUrl { get; private set; }
+    public Year SchoolYear { get; private set; }
+    private readonly List<AssignmentResult> _assignmentResults;
+    public IReadOnlyList<AssignmentResult> AssignmentResults => _assignmentResults;
 
     [JsonConstructor]
     private Assignment(AssignmentId id, SectionId sectionId, Name title, GradeWeight gradeWeight, Year schoolYear, Url documentUrl, List<AssignmentResult> assignmentResults)
@@ -24,7 +25,7 @@ public sealed class Assignment
         GradeWeight = gradeWeight;
         SchoolYear = schoolYear;
         DocumentUrl = documentUrl;
-        AssignmentResults = assignmentResults;
+        _assignmentResults = assignmentResults;
     }
 
     public static Assignment Create(SectionId sectionId, Name title, GradeWeight gradeWeight, Year schoolYear, Url documentUrl)
