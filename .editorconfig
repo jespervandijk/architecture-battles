@@ -61,3 +61,6 @@ dotnet_diagnostic.IDE0046.severity = none
 
 # RCS1141: Add 'param' element to documentation comment
 dotnet_diagnostic.RCS1141.severity = none
+
+# RCS1194: Implement exception constructors
+dotnet_diagnostic.RCS1194.severity = none

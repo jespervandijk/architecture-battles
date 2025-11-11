@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Universities;
+using AcademicManagement.Domain.Exceptions;
 using AcademicManagement.Domain.Scalars;
 
 namespace AcademicManagement.Domain.Aggregates.Courses;
@@ -116,24 +117,10 @@ public sealed class Course
 
     public void Validate()
     {
-        CourseValidator.Validate(this);
-    }
-
-    private static class CourseValidator
-    {
-        private const int MaxSections = 4;
-
-        public static void Validate(Course course)
+        const int maxSections = 4;
+        if (Sections.Count >= maxSections)
         {
-            ValidateSectionCount(course.Sections.Count);
-        }
-
-        private static void ValidateSectionCount(int currentCount)
-        {
-            if (currentCount >= MaxSections)
-            {
-                throw new InvalidOperationException($"A course cannot have more than {MaxSections} sections. Each section takes up a school period and there are only {MaxSections} periods in a year.");
-            }
+            throw new AggregateInvalidStateException($"A course cannot have more than {maxSections} sections. Each section takes up a school period and there are only {maxSections} periods in a year.");
         }
     }
 }
