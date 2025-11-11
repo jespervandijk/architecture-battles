@@ -1,10 +1,9 @@
-using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Scalars;
 
-namespace AcademicManagement.Domain.Factories;
+namespace AcademicManagement.Domain.Aggregates.Courses;
 
 public static class CourseFactory
 {

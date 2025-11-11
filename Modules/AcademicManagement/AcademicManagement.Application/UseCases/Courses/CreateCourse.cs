@@ -4,7 +4,6 @@ using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Universities;
-using AcademicManagement.Domain.Factories;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
 
