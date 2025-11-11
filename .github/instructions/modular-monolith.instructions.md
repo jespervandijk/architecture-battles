@@ -23,10 +23,12 @@ applyTo: "**"
 
 - **Aggregates:**
   - I have a folder called Aggregates inside the domain layer. This folder has nested folders for each aggregate root. Inside these folders I put the aggregate root entity, related entities and value objects.
-  - Aggregate roots have properties with public getter and setters. Entities have internal setters. This way only the aggregate root can modify its related entities.
 - **Entities:**
   - For entities I use classes.
   - Every Entity has an Id property. This property uses a value object as type. Under the hood this value object wraps a guid.
+  - Aggregate roots have properties with private setters. If we want to write to an aggregate it should alwys be done through methods on the aggregate root entity itself.
+  - Other entities in the aggregate can have properties with internal setters. This way only code inside the domain layer can write to these entities. Its not perfect because all aggregates are in the same assembly. But its better than public setters.
+  - For collection properties I use IReadOnlyList<T> as type. The backing field is a List<T>. This way the collections are immutable from outside the aggregate.
 - **Value Objects:**
   - For single value objects I use the packahge Vogen.
   - For value objects with multiple properties I use records.
