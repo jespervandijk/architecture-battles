@@ -6,6 +6,7 @@ using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Aggregates.Users;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 using Qowaiv;
 
 namespace AcademicManagement.Application.UseCases.Professors;
@@ -14,8 +15,9 @@ public class CreateProfessorEndpoint : Endpoint<CreateProfessor, ProfessorId>
 {
     public override void Configure()
     {
-        Post("academic-management/professor/create");
+        Post("academic-management/professors/create");
         Policies(PolicyAcademicManagement.PresidentOnly);
+        Description(x => x.WithTags("academic-management/professors"));
     }
 
     public override async Task HandleAsync(CreateProfessor req, CancellationToken ct)

@@ -3,6 +3,7 @@ using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -10,8 +11,9 @@ public class UpdateSectionByProfessorEndpoint : Endpoint<UpdateSectionByProfesso
 {
     public override void Configure()
     {
-        Post("academic-management/course/section/update-by-teacher");
+        Post("academic-management/courses/update-section--by-professor");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+        Description(x => x.WithTags("academic-management/courses"));
     }
 
     public override async Task HandleAsync(UpdateSectionByProfessor req, CancellationToken ct)

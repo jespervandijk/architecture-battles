@@ -3,6 +3,7 @@ using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Departments;
 
@@ -10,8 +11,9 @@ public class UpdateDepartmentEndpoint : Endpoint<UpdateDepartment, DepartmentId>
 {
     public override void Configure()
     {
-        Post("academic-management/department/update");
+        Post("academic-management/departments/update");
         Policies(PolicyAcademicManagement.PresidentOnly);
+        Description(x => x.WithTags("academic-management/departments"));
     }
 
     public override async Task HandleAsync(UpdateDepartment req, CancellationToken ct)

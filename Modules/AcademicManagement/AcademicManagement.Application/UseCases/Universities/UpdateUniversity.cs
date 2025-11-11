@@ -3,7 +3,7 @@ using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
-using FluentValidation;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Universities;
 
@@ -11,8 +11,9 @@ public class UpdateUniversityEndpoint : Endpoint<UpdateUniversity, UniversityId>
 {
     public override void Configure()
     {
-        Post("academic-management/university/update");
+        Post("academic-management/universities/update");
         Policies(PolicyAcademicManagement.PresidentOnly);
+        Description(x => x.WithTags("academic-management/universities"));
     }
 
     public override async Task HandleAsync(UpdateUniversity req, CancellationToken ct)

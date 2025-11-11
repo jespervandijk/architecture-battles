@@ -3,6 +3,7 @@ using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Professors;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -10,8 +11,9 @@ public class CreateSectionEndpoint : Endpoint<CreateSection, SectionId>
 {
     public override void Configure()
     {
-        Post("academic-management/course/section/create");
+        Post("academic-management/courses/create-section");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+        Description(x => x.WithTags("academic-management/courses"));
     }
 
     public override async Task HandleAsync(CreateSection req, CancellationToken ct)

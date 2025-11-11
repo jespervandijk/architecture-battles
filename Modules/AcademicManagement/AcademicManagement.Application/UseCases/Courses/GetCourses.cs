@@ -8,6 +8,7 @@ using AcademicManagement.Domain.Aggregates.Users;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -30,6 +31,7 @@ public class GetAllCoursesEndpoint : Endpoint<GetCourses, IReadOnlyList<CourseDt
     {
         Get("academic-management/courses");
         Policies(PolicyAcademicManagement.PresidentOnly, PolicyAcademicManagement.ProfessorOnly);
+        Description(x => x.WithTags("academic-management/courses"));
     }
 
     public override async Task HandleAsync(GetCourses req, CancellationToken ct)

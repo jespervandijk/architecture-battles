@@ -4,6 +4,7 @@ using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Aggregates.Users;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Presidents;
 
@@ -13,6 +14,7 @@ public class CreatePresidentEndpoint : Endpoint<CreatePresident, PresidentId>
     {
         Post("academic-management/presidents/create");
         AllowAnonymous();
+        Description(x => x.WithTags("academic-management/presidents"));
     }
 
     public override async Task HandleAsync(CreatePresident req, CancellationToken ct)

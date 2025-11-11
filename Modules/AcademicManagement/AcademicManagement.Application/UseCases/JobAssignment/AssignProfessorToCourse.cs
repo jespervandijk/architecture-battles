@@ -4,6 +4,7 @@ using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Services;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.JobAssignment;
 
@@ -11,8 +12,9 @@ public class AssignProfessorToCourseEndpoint : Endpoint<AssignProfessorToCourse,
 {
     public override void Configure()
     {
-        Post("academic-management/course/assign-professor");
+        Post("academic-management/job-assignments/assign-professor-to-course");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+        Description(x => x.WithTags("academic-management/job-assignments"));
     }
 
     public override async Task HandleAsync(AssignProfessorToCourse req, CancellationToken ct)

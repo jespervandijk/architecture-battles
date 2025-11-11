@@ -2,6 +2,7 @@ using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Courses;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -9,8 +10,9 @@ public class ArchiveCourseEndpoint : Endpoint<ArchiveCourse>
 {
     public override void Configure()
     {
-        Post("academic-management/course/archive");
+        Post("academic-management/courses/archive");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+        Description(x => x.WithTags("academic-management/courses"));
     }
 
     public override async Task HandleAsync(ArchiveCourse req, CancellationToken ct)

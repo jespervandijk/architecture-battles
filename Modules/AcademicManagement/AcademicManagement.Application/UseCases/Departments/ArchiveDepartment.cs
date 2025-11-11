@@ -2,6 +2,7 @@ using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Departments;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Departments;
 
@@ -9,8 +10,9 @@ public class ArchiveDepartmentEndpoint : Endpoint<ArchiveDepartment, DepartmentI
 {
     public override void Configure()
     {
-        Post("academic-management/department/archive");
+        Post("academic-management/departments/archive");
         Policies(PolicyAcademicManagement.PresidentOnly);
+        Description(x => x.WithTags("academic-management/departments"));
     }
 
     public override async Task HandleAsync(ArchiveDepartment req, CancellationToken ct)

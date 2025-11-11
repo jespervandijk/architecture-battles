@@ -3,6 +3,7 @@ using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Professors;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -10,8 +11,9 @@ public class RemoveProfessorFromCourseEndpoint : Endpoint<RemoveProfessorFromCou
 {
     public override void Configure()
     {
-        Post("academic-management/course/remove-professor");
+        Post("academic-management/courses/remove-professor");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+        Description(x => x.WithTags("academic-management/courses"));
     }
 
     public override async Task HandleAsync(RemoveProfessorFromCourse req, CancellationToken ct)

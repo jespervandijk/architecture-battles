@@ -12,9 +12,9 @@ public class UpdateSectionByCourseOwnerEndpoint : Endpoint<UpdateSectionByCourse
 {
     public override void Configure()
     {
-        Post("academic-management/course/section/update-by-course-owner");
+        Post("academic-management/courses/update-section-by-course-owner");
         Policies(PolicyAcademicManagement.ProfessorOnly);
-        Description(x => x.WithTags("academic-management/courses/section"));
+        Description(x => x.WithTags("academic-management/courses"));
     }
 
     public override async Task HandleAsync(UpdateSectionByCourseOwner req, CancellationToken ct)

@@ -4,6 +4,7 @@ using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Services;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.JobAssignment;
 
@@ -11,8 +12,9 @@ public class AssignProfessorToDepartmentEndpoint : Endpoint<AssignProfessorToDep
 {
     public override void Configure()
     {
-        Post("academic-management/professor/assign-to-department");
+        Post("academic-management/job-assignments/assign-professor-to-department");
         Policies(PolicyAcademicManagement.PresidentOnly);
+        Description(x => x.WithTags("academic-management/job-assignments"));
     }
 
     public override async Task HandleAsync(AssignProfessorToDepartment req, CancellationToken ct)

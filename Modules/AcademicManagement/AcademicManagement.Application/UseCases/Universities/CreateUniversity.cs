@@ -4,6 +4,7 @@ using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Universities;
 
@@ -11,8 +12,9 @@ public class CreateUniversityEndpoint : Endpoint<CreateUniversity, UniversityId>
 {
     public override void Configure()
     {
-        Post("academic-management/university/create");
+        Post("academic-management/universities/create");
         Policies(PolicyAcademicManagement.PresidentOnly);
+        Description(x => x.WithTags("academic-management/universities"));
     }
 
     public override async Task HandleAsync(CreateUniversity req, CancellationToken ct)

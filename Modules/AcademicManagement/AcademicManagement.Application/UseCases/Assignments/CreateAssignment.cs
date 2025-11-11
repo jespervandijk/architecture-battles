@@ -5,6 +5,7 @@ using AcademicManagement.Domain.Aggregates.Assignments;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 using Qowaiv;
 
 namespace AcademicManagement.Application.UseCases.Assignments;
@@ -13,8 +14,9 @@ public class CreateAssignmentEndpoint : Endpoint<CreateAssignment, AssignmentId>
 {
     public override void Configure()
     {
-        Post("/assignments");
+        Post("academic-management/assignments/create");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+        Description(x => x.WithTags("academic-management/assignments"));
     }
 
     public override async Task HandleAsync(CreateAssignment req, CancellationToken ct)

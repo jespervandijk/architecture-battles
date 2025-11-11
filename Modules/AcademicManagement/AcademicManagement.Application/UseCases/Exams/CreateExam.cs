@@ -5,6 +5,7 @@ using AcademicManagement.Domain.Aggregates.Exams;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Qowaiv;
 
 namespace AcademicManagement.Application.UseCases.Exams;
@@ -13,8 +14,9 @@ public class CreateExamEndpoint : Endpoint<CreateExam, ExamId>
 {
     public override void Configure()
     {
-        Post("/exams");
+        Post("academic-management/exams/create");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+        Description(x => x.WithTags("academic-management/exams"));
     }
 
     public override async Task HandleAsync(CreateExam req, CancellationToken ct)

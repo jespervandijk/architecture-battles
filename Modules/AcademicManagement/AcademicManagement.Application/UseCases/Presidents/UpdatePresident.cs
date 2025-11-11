@@ -3,6 +3,7 @@ using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Presidents;
 
@@ -12,6 +13,7 @@ public class UpdatePresidentEndpoint : Endpoint<UpdatePresident, PresidentId>
     {
         Post("academic-management/presidents/update");
         Policies(PolicyAcademicManagement.PresidentOnly);
+        Description(x => x.WithTags("academic-management/presidents"));
     }
 
     public override async Task HandleAsync(UpdatePresident req, CancellationToken ct)

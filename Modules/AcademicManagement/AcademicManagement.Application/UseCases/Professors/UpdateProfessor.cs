@@ -3,6 +3,7 @@ using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 using Qowaiv;
 
 namespace AcademicManagement.Application.UseCases.Professors;
@@ -11,8 +12,9 @@ public class UpdateProfessorEndpoint : Endpoint<UpdateProfessor, ProfessorId>
 {
     public override void Configure()
     {
-        Post("academic-management/professor/update");
+        Post("academic-management/professors/update");
         Policies(PolicyAcademicManagement.PresidentOnly);
+        Description(x => x.WithTags("academic-management/professors"));
     }
 
     public override async Task HandleAsync(UpdateProfessor req, CancellationToken ct)

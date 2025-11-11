@@ -5,6 +5,7 @@ using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Departments;
 
@@ -12,8 +13,9 @@ public class CreateDepartmentEndpoint : Endpoint<CreateDepartment, DepartmentId>
 {
     public override void Configure()
     {
-        Post("academic-management/department/create");
+        Post("academic-management/departments/create");
         Policies(PolicyAcademicManagement.PresidentOnly);
+        Description(x => x.WithTags("academic-management/departments"));
     }
 
     public override async Task HandleAsync(CreateDepartment req, CancellationToken ct)

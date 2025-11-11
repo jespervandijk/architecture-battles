@@ -6,6 +6,7 @@ using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -14,8 +15,9 @@ public class CreateCourseEndpoint : Endpoint<CreateCourse, CourseId>
 {
     public override void Configure()
     {
-        Post("academic-management/course/create");
+        Post("academic-management/courses/create");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+        Description(x => x.WithTags("academic-management/courses"));
     }
 
     public override async Task HandleAsync(CreateCourse req, CancellationToken ct)

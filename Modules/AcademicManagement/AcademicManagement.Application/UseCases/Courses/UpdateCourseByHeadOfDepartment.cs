@@ -5,6 +5,7 @@ using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
 using AcademicManagement.Domain.Services;
 using FastEndpoints;
+using Microsoft.AspNetCore.Http;
 
 namespace AcademicManagement.Application.UseCases.Courses;
 
@@ -12,8 +13,9 @@ public class UpdateCourseByHeadOfDepartmentEndpoint : Endpoint<UpdateCourseByHea
 {
     public override void Configure()
     {
-        Post("academic-management/course/update-by-head");
+        Post("academic-management/courses/update-by-head-of-department");
         Policies(PolicyAcademicManagement.ProfessorOnly);
+        Description(x => x.WithTags("academic-management/courses"));
     }
 
     public override async Task HandleAsync(UpdateCourseByHeadOfDepartment req, CancellationToken ct)
