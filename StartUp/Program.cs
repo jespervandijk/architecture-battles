@@ -30,6 +30,7 @@ builder.Services
                 });
             };
         options.ShortSchemaNames = true;
+        options.AutoTagPathSegmentIndex = 0;
     });
 
 builder.Services.AddServicesAllModules(builder.Configuration);
