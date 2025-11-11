@@ -9,12 +9,13 @@ public sealed class Exam
 {
     public ExamId Id { get; init; }
     public SectionId SectionId { get; init; }
-    public Name Title { get; set; }
-    public TimeSpan Duration { get; set; }
-    public GradeWeight GradeWeight { get; set; }
-    public Year SchoolYear { get; set; }
-    public Url DocumentUrl { get; set; }
-    public List<ExamResult> ExamResults { get; set; }
+    public Name Title { get; private set; }
+    public TimeSpan Duration { get; private set; }
+    public GradeWeight GradeWeight { get; private set; }
+    public Year SchoolYear { get; private set; }
+    public Url DocumentUrl { get; private set; }
+    private readonly List<ExamResult> _examResults;
+    public IReadOnlyList<ExamResult> ExamResults => _examResults;
 
     [JsonConstructor]
     private Exam(ExamId id, SectionId sectionId, Name title, TimeSpan duration, GradeWeight gradeWeight, Year schoolYear, Url documentUrl, List<ExamResult> examResults)
@@ -26,7 +27,7 @@ public sealed class Exam
         GradeWeight = gradeWeight;
         SchoolYear = schoolYear;
         DocumentUrl = documentUrl;
-        ExamResults = examResults;
+        _examResults = examResults;
     }
 
     public static Exam Create(SectionId sectionId, Name title, TimeSpan duration, GradeWeight gradeWeight, Year schoolYear, Url documentUrl)
