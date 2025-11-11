@@ -6,8 +6,8 @@ namespace AcademicManagement.Domain.Aggregates.Students;
 public sealed class Student
 {
     public StudentId Id { get; init; }
-    public Name FirstName { get; set; }
-    public Name LastName { get; set; }
+    public Name FirstName { get; private set; }
+    public Name LastName { get; private set; }
 
     [JsonConstructor]
     private Student(StudentId id, Name firstName, Name lastName)
