@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Aggregates.Users;
+using AcademicManagement.Domain.Scalars;
 using Qowaiv;
 
 namespace AcademicManagement.Domain.Aggregates.Professors;
@@ -10,15 +11,15 @@ public sealed class Professor
 {
     public ProfessorId Id { get; init; }
     public UserId UserId { get; init; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public EmailAddress EmailAddress { get; set; }
+    public Name FirstName { get; private set; }
+    public Name LastName { get; private set; }
+    public EmailAddress EmailAddress { get; private set; }
     public UniversityId WorkPlace { get; init; }
-    public DepartmentId? DepartmentId { get; set; }
-    public Rank Rank { get; set; }
+    public DepartmentId? DepartmentId { get; private set; }
+    public Rank Rank { get; private set; }
 
     [JsonConstructor]
-    private Professor(ProfessorId id, string firstName, string lastName, EmailAddress emailAddress, Rank rank, UniversityId workPlace, UserId userId, DepartmentId? departmentId)
+    internal Professor(ProfessorId id, Name firstName, Name lastName, EmailAddress emailAddress, Rank rank, UniversityId workPlace, UserId userId, DepartmentId? departmentId)
     {
         Id = id;
         FirstName = firstName;
@@ -30,12 +31,7 @@ public sealed class Professor
         DepartmentId = departmentId;
     }
 
-    public static Professor Create(string firstName, string lastName, EmailAddress emailAddress, Rank rank, UniversityId workPlace, UserId userId, DepartmentId? departmentId = null)
-    {
-        return new Professor(ProfessorId.Next(), firstName, lastName, emailAddress, rank, workPlace, userId, departmentId);
-    }
-
-    public void Update(string firstName, string lastName, EmailAddress emailAddress, Rank rank)
+    public void Update(Name firstName, Name lastName, EmailAddress emailAddress, Rank rank)
     {
         FirstName = firstName;
         LastName = lastName;

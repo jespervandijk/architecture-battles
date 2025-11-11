@@ -1,8 +1,8 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Professors;
+using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
-using FluentValidation;
 using Qowaiv;
 
 namespace AcademicManagement.Application.UseCases.Professors;
@@ -24,8 +24,8 @@ public class UpdateProfessorEndpoint : Endpoint<UpdateProfessor, ProfessorId>
 public record UpdateProfessor : ICommand<ProfessorId>
 {
     public required ProfessorId ProfessorId { get; init; }
-    public required string FirstName { get; init; }
-    public required string LastName { get; init; }
+    public required Name FirstName { get; init; }
+    public required Name LastName { get; init; }
     public required EmailAddress EmailAddress { get; init; }
     public required Rank Rank { get; init; }
 }

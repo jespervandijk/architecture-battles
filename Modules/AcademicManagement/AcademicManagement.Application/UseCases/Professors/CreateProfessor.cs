@@ -1,12 +1,11 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Departments;
-using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Universities;
 using AcademicManagement.Domain.Aggregates.Users;
+using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
-using FluentValidation;
 using Qowaiv;
 
 namespace AcademicManagement.Application.UseCases.Professors;
@@ -27,9 +26,9 @@ public class CreateProfessorEndpoint : Endpoint<CreateProfessor, ProfessorId>
 
 public record CreateProfessor : ICommand<ProfessorId>
 {
-    public required string UserName { get; init; }
-    public required string FirstName { get; init; }
-    public required string LastName { get; init; }
+    public required UserName UserName { get; init; }
+    public required Name FirstName { get; init; }
+    public required Name LastName { get; init; }
     public required EmailAddress EmailAddress { get; init; }
     public required Rank Rank { get; init; }
     public required UniversityId WorkPlace { get; init; }
@@ -65,27 +64,19 @@ public class CreateProfessorHandler : ICommandHandler<CreateProfessor, Professor
             throw new UnauthorizedAccessException("You are not authorized to create professors for this university");
         }
 
-        if (command.DepartmentId is not null)
-        {
-            var department = await _departmentRepository.GetByIdAsync(command.DepartmentId.Value);
-            if (department.UniversityId != command.WorkPlace)
-            {
-                throw new InvalidOperationException("Department must belong to the same university as the professor's workplace");
-            }
-        }
+        var department = command.DepartmentId is not null ? await _departmentRepository.GetByIdAsync(command.DepartmentId.Value) : null;
 
-        var userName = UserName.From(command.UserName);
-        var user = User.Create(userName, UserRole.Professor);
+        var user = User.Create(command.UserName, UserRole.Professor);
         _userRepository.Insert(user);
 
-        var professor = Professor.Create(
+        var professor = ProfessorFactory.Create(
+            university,
+            department,
             command.FirstName,
             command.LastName,
             command.EmailAddress,
             command.Rank,
-            command.WorkPlace,
-            user.Id,
-            command.DepartmentId
+            user.Id
         );
         _professorRepository.Insert(professor);
         await _unitOfWork.SaveChangesAsync();
