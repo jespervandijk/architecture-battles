@@ -1,12 +1,11 @@
 using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Departments;
-using AcademicManagement.Domain.Aggregates.Presidents;
 using AcademicManagement.Domain.Aggregates.Professors;
+using AcademicManagement.Domain.Services;
 using FastEndpoints;
-using FluentValidation;
 
-namespace AcademicManagement.Application.UseCases.Professors;
+namespace AcademicManagement.Application.UseCases.JobAssignment;
 
 public class AssignProfessorToDepartmentEndpoint : Endpoint<AssignProfessorToDepartment, ProfessorId>
 {
@@ -58,20 +57,10 @@ public class AssignProfessorToDepartmentHandler : ICommandHandler<AssignProfesso
             throw new UnauthorizedAccessException("You are not authorized to manage this professor");
         }
 
-        if (professor.WorkPlace != department.UniversityId)
-        {
-            throw new InvalidOperationException("Professor can only be assigned to a department in their workplace university");
-        }
+        JobAssignmentService.AssignProfessorToDepartment(professor, department, command.AsHeadOfDepartment);
 
-        professor.AssignToDepartment(command.DepartmentId);
         _professorRepository.Update(professor);
-
-        if (command.AsHeadOfDepartment)
-        {
-            department.HeadOfDepartment = command.ProfessorId;
-            _departmentRepository.Update(department);
-        }
-
+        _departmentRepository.Update(department);
         await _unitOfWork.SaveChangesAsync();
         return professor.Id;
     }

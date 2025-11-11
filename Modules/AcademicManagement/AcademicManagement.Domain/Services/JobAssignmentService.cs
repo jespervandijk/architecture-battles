@@ -1,7 +1,6 @@
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Professors;
-using AcademicManagement.Domain.Aggregates.Universities;
 
 namespace AcademicManagement.Domain.Services;
 
@@ -26,18 +25,19 @@ public static class JobAssignmentService
         }
     }
 
-    public static void AssignHeadOfDepartment(Department department, Professor professor, University university)
+    public static void AssignProfessorToDepartment(Professor professor, Department department, bool asHeadOfDepartment = false)
     {
-        if (department.UniversityId != university.Id)
+        if (professor.WorkPlace != department.UniversityId)
         {
-            throw new InvalidOperationException("Department must belong to the specified university.");
-        }
-        if (professor.WorkPlace != university.Id)
-        {
-            throw new InvalidOperationException("Professor must work at the university to be head of department");
+            throw new InvalidOperationException("Professor can only be assigned to a department in their workplace university");
         }
 
-        department.HeadOfDepartment = professor.Id;
+        professor.AssignToDepartment(department.Id);
+
+        if (asHeadOfDepartment)
+        {
+            department.HeadOfDepartment = professor.Id;
+        }
     }
 
     private static void GuardProfessorWorksAtDepartment(this Professor professor, DepartmentId departmentId)
