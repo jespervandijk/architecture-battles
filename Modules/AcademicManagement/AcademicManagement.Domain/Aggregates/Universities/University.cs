@@ -8,14 +8,11 @@ namespace AcademicManagement.Domain.Aggregates.Universities;
 public sealed class University
 {
     public UniversityId Id { get; init; }
-
-    public PresidentId President { get; set; }
-
-    public Name Name { get; set; }
-
-    public List<ProfessorId> Professors { get; set; }
-
-    public bool IsArchived { get; set; }
+    public PresidentId President { get; init; }
+    public Name Name { get; private set; }
+    private readonly List<ProfessorId> _professors;
+    public IReadOnlyList<ProfessorId> Professors => _professors;
+    public bool IsArchived { get; private set; }
 
     [JsonConstructor]
     private University(UniversityId id, PresidentId president, Name name, List<ProfessorId> professors, bool isArchived)
@@ -24,7 +21,7 @@ public sealed class University
         President = president;
         Name = name;
         IsArchived = isArchived;
-        Professors = professors;
+        _professors = professors;
     }
 
     public static University Create(PresidentId president, Name name)
@@ -35,5 +32,10 @@ public sealed class University
     public void Update(Name name)
     {
         Name = name;
+    }
+
+    public void Archive()
+    {
+        IsArchived = true;
     }
 }

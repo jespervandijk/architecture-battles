@@ -47,7 +47,7 @@ public class UpdateUniversityHandler : ICommandHandler<UpdateUniversity, Univers
         var presidentId = _userContextService.GetPresidentId();
         if (university.President != presidentId)
         {
-            throw new UnauthorizedAccessException("You must be the president of this university");
+            throw new UnauthorizedAccessException("You must be the president of this university.");
         }
 
         university.Update(command.Name);

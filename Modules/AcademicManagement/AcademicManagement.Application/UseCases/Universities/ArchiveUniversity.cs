@@ -45,10 +45,10 @@ public class ArchiveUniversityHandler : ICommandHandler<ArchiveUniversity, Unive
         var presidentId = _userContextService.GetPresidentId();
         if (university.President != presidentId)
         {
-            throw new UnauthorizedAccessException("You must be the president of this university");
+            throw new UnauthorizedAccessException("You must be the president of this university.");
         }
 
-        university.IsArchived = true;
+        university.Archive();
         _universityRepository.Update(university);
         await _unitOfWork.SaveChangesAsync();
 
