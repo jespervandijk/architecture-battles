@@ -115,6 +115,12 @@ public sealed class Course
         section.UpdateDetails(name, teachingMaterialsUrl);
     }
 
+    public Section GetSection(SectionId sectionId)
+    {
+        return Sections.FirstOrDefault(s => s.Id == sectionId)
+            ?? throw new InvalidOperationException("Section not found in this course");
+    }
+
     public void Validate()
     {
         const int maxSections = 4;
