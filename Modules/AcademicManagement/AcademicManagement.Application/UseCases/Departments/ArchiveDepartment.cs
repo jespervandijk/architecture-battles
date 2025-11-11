@@ -50,7 +50,7 @@ public class ArchiveDepartmentHandler : ICommandHandler<ArchiveDepartment, Depar
             throw new UnauthorizedAccessException("You must be the president of the university that owns this department");
         }
 
-        department.IsArchived = true;
+        department.Archive();
         _departmentRepository.Update(department);
         await _unitOfWork.SaveChangesAsync();
 

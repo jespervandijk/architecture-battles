@@ -3,6 +3,7 @@ using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
+using AcademicManagement.Domain.Services;
 using FastEndpoints;
 
 namespace AcademicManagement.Application.UseCases.Departments;
@@ -32,14 +33,21 @@ public class UpdateDepartmentHandler : ICommandHandler<UpdateDepartment, Departm
 {
     private readonly IDepartmentRepository _departmentRepository;
     private readonly IUniversityRepository _universityRepository;
+    private readonly IProfessorRepository _professorRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserContextService _userContextService;
 
-    public UpdateDepartmentHandler(IDepartmentRepository departmentRepository, IUnitOfWork unitOfWork, IUniversityRepository universityRepository, IUserContextService userContextService)
+    public UpdateDepartmentHandler(
+        IDepartmentRepository departmentRepository,
+        IUnitOfWork unitOfWork,
+        IUniversityRepository universityRepository,
+        IProfessorRepository professorRepository,
+        IUserContextService userContextService)
     {
         _departmentRepository = departmentRepository;
         _unitOfWork = unitOfWork;
         _universityRepository = universityRepository;
+        _professorRepository = professorRepository;
         _userContextService = userContextService;
     }
 
@@ -54,7 +62,11 @@ public class UpdateDepartmentHandler : ICommandHandler<UpdateDepartment, Departm
             throw new UnauthorizedAccessException("You must be the president of the university that owns this department");
         }
 
-        department.Update(command.Name, command.HeadOfDepartment);
+        var headOfDepartment = await _professorRepository.GetByIdAsync(command.HeadOfDepartment);
+
+        department.UpdateDetails(command.Name);
+        JobAssignmentService.AssignHeadOfDepartment(department, headOfDepartment, university);
+
         _departmentRepository.Update(department);
         await _unitOfWork.SaveChangesAsync();
         return department.Id;

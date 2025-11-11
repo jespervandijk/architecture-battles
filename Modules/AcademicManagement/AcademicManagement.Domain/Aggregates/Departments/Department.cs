@@ -8,13 +8,13 @@ namespace AcademicManagement.Domain.Aggregates.Departments;
 public sealed class Department
 {
     public DepartmentId Id { get; init; }
-    public UniversityId UniversityId { get; set; }
-    public Name Name { get; set; }
-    public ProfessorId HeadOfDepartment { get; set; }
-    public bool IsArchived { get; set; }
+    public UniversityId UniversityId { get; private set; }
+    public Name Name { get; private set; }
+    public ProfessorId HeadOfDepartment { get; internal set; }
+    public bool IsArchived { get; private set; }
 
     [JsonConstructor]
-    private Department(DepartmentId id, UniversityId universityId, Name name, ProfessorId headOfDepartment, bool isArchived)
+    internal Department(DepartmentId id, UniversityId universityId, Name name, ProfessorId headOfDepartment, bool isArchived)
     {
         Id = id;
         UniversityId = universityId;
@@ -22,15 +22,15 @@ public sealed class Department
         HeadOfDepartment = headOfDepartment;
         IsArchived = isArchived;
     }
-    public static Department Create(UniversityId universityId, Name name, ProfessorId headOfDepartment)
-    {
-        return new Department(DepartmentId.Next(), universityId, name, headOfDepartment, false);
-    }
 
-    public void Update(Name name, ProfessorId headOfDepartment)
+    public void UpdateDetails(Name name)
     {
         Name = name;
-        HeadOfDepartment = headOfDepartment;
+    }
+
+    public void Archive()
+    {
+        IsArchived = true;
     }
 }
 

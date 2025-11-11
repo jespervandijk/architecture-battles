@@ -33,14 +33,21 @@ public class CreateDepartmentHandler : ICommandHandler<CreateDepartment, Departm
 {
     private readonly IDepartmentRepository _departmentRepository;
     private readonly IUniversityRepository _universityRepository;
+    private readonly IProfessorRepository _professorRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IUserContextService _userContextService;
 
-    public CreateDepartmentHandler(IDepartmentRepository departmentRepository, IUnitOfWork unitOfWork, IUniversityRepository universityRepository, IUserContextService userContextService)
+    public CreateDepartmentHandler(
+        IDepartmentRepository departmentRepository,
+        IUnitOfWork unitOfWork,
+        IUniversityRepository universityRepository,
+        IProfessorRepository professorRepository,
+        IUserContextService userContextService)
     {
         _departmentRepository = departmentRepository;
         _unitOfWork = unitOfWork;
         _universityRepository = universityRepository;
+        _professorRepository = professorRepository;
         _userContextService = userContextService;
     }
 
@@ -54,7 +61,9 @@ public class CreateDepartmentHandler : ICommandHandler<CreateDepartment, Departm
             throw new UnauthorizedAccessException("You must be the president of this university");
         }
 
-        var department = Department.Create(command.UniversityId, command.Name, command.HeadOfDepartment);
+        var headOfDepartment = await _professorRepository.GetByIdAsync(command.HeadOfDepartment);
+
+        var department = DepartmentFactory.Create(university, headOfDepartment, command.Name);
         _departmentRepository.Insert(department);
         await _unitOfWork.SaveChangesAsync();
         return department.Id;
