@@ -10,8 +10,8 @@ namespace AcademicManagement.Domain.Aggregates.Courses;
 public sealed class Course
 {
     public CourseId Id { get; init; }
-    public UniversityId University { get; set; }
-    public DepartmentId Department { get; set; }
+    public UniversityId University { get; init; }
+    public DepartmentId Department { get; init; }
     public ProfessorId CourseOwner { get; internal set; }
     private readonly List<ProfessorId> _professors;
     public IReadOnlyList<ProfessorId> Professors => _professors;
@@ -19,7 +19,7 @@ public sealed class Course
     public Description? Description { get; private set; }
     public Credits Credits { get; private set; }
     public StudentCapacity? MaxCapacity { get; private set; }
-    public CourseStatus Status { get; set; }
+    public CourseStatus Status { get; private set; }
     private readonly List<Section> _sections;
     public IReadOnlyList<Section> Sections => _sections;
 
