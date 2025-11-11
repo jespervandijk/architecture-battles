@@ -11,9 +11,9 @@ public sealed class President
 
     public UserId UserId { get; init; }
 
-    public Name FirstName { get; set; }
+    public Name FirstName { get; private set; }
 
-    public Name LastName { get; set; }
+    public Name LastName { get; private set; }
 
 
     [JsonConstructor]
