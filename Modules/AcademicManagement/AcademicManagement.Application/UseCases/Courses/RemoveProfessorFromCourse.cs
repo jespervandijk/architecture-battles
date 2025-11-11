@@ -55,11 +55,6 @@ public class RemoveProfessorFromCourseHandler : ICommandHandler<RemoveProfessorF
             throw new UnauthorizedAccessException("Only the head of department can remove professors from courses");
         }
 
-        if (course.CourseOwner == command.ProfessorId)
-        {
-            throw new InvalidOperationException("Cannot remove the course owner. Please assign a new course owner first using the assign professor endpoint.");
-        }
-
         course.RemoveProfessor(command.ProfessorId);
         _courseRepository.Update(course);
         await _unitOfWork.SaveChangesAsync();

@@ -3,6 +3,7 @@ using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Scalars;
+using AcademicManagement.Domain.Services;
 using FastEndpoints;
 
 namespace AcademicManagement.Application.UseCases.Courses;
@@ -60,12 +61,10 @@ public class UpdateCourseByHeadOfDepartmentHandler : ICommandHandler<UpdateCours
             throw new UnauthorizedAccessException("You must be the head of the department that owns this course");
         }
 
-        if (courseOwnerProfessor.DepartmentId != course.Department)
-        {
-            throw new InvalidOperationException("Course owner must be assigned to the course's department");
-        }
+        course.UpdateCourseDetails(command.Title, command.Description, command.MaxCapacity);
+        course.ChangeCredits(command.Credits);
+        JobAssignmentService.AddProfessorAsCourseOwner(course, courseOwnerProfessor);
 
-        course.UpdateCourse(command.CourseOwner, command.Title, command.Description, command.Credits, command.MaxCapacity);
         _courseRepository.Update(course);
         await _unitOfWork.SaveChangesAsync();
         return course.Id;

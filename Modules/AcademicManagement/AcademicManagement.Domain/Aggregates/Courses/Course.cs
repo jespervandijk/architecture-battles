@@ -11,18 +11,19 @@ public sealed class Course
     public CourseId Id { get; init; }
     public UniversityId University { get; set; }
     public DepartmentId Department { get; set; }
-    public ProfessorId CourseOwner { get; set; }
-    public List<ProfessorId> Professors { get; set; }
-    public Name Title { get; set; }
-    public Description? Description { get; set; }
-    public Credits Credits { get; set; }
-    public StudentCapacity? MaxCapacity { get; set; }
+    public ProfessorId CourseOwner { get; internal set; }
+    private readonly List<ProfessorId> _professors;
+    public IReadOnlyList<ProfessorId> Professors => _professors;
+    public Name Title { get; private set; }
+    public Description? Description { get; private set; }
+    public Credits Credits { get; private set; }
+    public StudentCapacity? MaxCapacity { get; private set; }
     public CourseStatus Status { get; set; }
-    public bool IsArchived { get; set; }
-    public List<Section> Sections { get; set; }
+    private readonly List<Section> _sections;
+    public IReadOnlyList<Section> Sections => _sections;
 
     [JsonConstructor]
-    private Course(
+    internal Course(
         CourseId id,
         UniversityId university,
         DepartmentId department,
@@ -33,7 +34,6 @@ public sealed class Course
         Credits credits,
         StudentCapacity? maxCapacity,
         CourseStatus status,
-        bool isArchived,
         List<Section> sections
         )
     {
@@ -41,41 +41,15 @@ public sealed class Course
         University = university;
         Department = department;
         CourseOwner = courseOwner;
-        Professors = professors;
+        _professors = professors;
         Title = title;
         Description = description;
         Credits = credits;
         MaxCapacity = maxCapacity;
         Status = status;
-        IsArchived = isArchived;
-        Sections = sections;
+        _sections = sections;
     }
 
-    public static Course Create(
-        UniversityId university,
-        DepartmentId department,
-        ProfessorId courseOwner,
-        Name title,
-        Credits credits,
-        Description? description = null,
-        StudentCapacity? maxCapacity = null
-    )
-    {
-        return new Course(
-            CourseId.Next(),
-            university,
-            department,
-            courseOwner,
-            [],
-            title,
-            description,
-            credits,
-            maxCapacity,
-            CourseStatus.Active,
-            false,
-            []
-        );
-    }
 
     public void UpdateCourseDetails(Name title, Description? description, StudentCapacity? maxCapacity)
     {
@@ -84,34 +58,21 @@ public sealed class Course
         MaxCapacity = maxCapacity;
     }
 
-    public void UpdateCourse(ProfessorId courseOwner, Name title, Description? description, Credits credits, StudentCapacity? maxCapacity)
+    public void ChangeCredits(Credits credits)
     {
-        CourseOwner = courseOwner;
-        Title = title;
-        Description = description;
         Credits = credits;
-        MaxCapacity = maxCapacity;
     }
 
     public void Archive()
     {
-        IsArchived = true;
+        Status = CourseStatus.Archived;
     }
 
-    public void AssignProfessorAsCourseOwner(ProfessorId professorId)
+    internal void AddProfessor(ProfessorId professorId)
     {
-        CourseOwner = professorId;
-        if (!Professors.Contains(professorId))
+        if (!_professors.Contains(professorId))
         {
-            Professors.Add(professorId);
-        }
-    }
-
-    public void AssignProfessor(ProfessorId professorId)
-    {
-        if (!Professors.Contains(professorId))
-        {
-            Professors.Add(professorId);
+            _professors.Add(professorId);
         }
     }
 
@@ -122,22 +83,32 @@ public sealed class Course
             throw new InvalidOperationException("Cannot remove the course owner. Please assign a new course owner first.");
         }
 
-        _ = Professors.Remove(professorId);
+        _ = _professors.Remove(professorId);
     }
 
-    public void CreateSection(string name, ProfessorId professor)
+    public SectionId CreateSection(string name, ProfessorId professorId)
     {
-        var section = Section.Create(name, professor);
-        Sections.Add(section);
+        if (Professors.Contains(professorId))
+        {
+            throw new InvalidOperationException("Professor must be assigned to the course before being assigned to a section.");
+        }
+        var section = Section.Create(name, professorId);
+        _sections.Add(section);
+        return section.Id;
     }
 
-    public void UpdateSection(SectionId sectionId, string name, ProfessorId professor)
+    public void ChangeSectionProfessor(SectionId sectionId, ProfessorId professorId)
     {
+        if (!Professors.Contains(professorId))
+        {
+            throw new InvalidOperationException("Professor must be assigned to the course before being assigned to a section.");
+        }
         var section = Sections.FirstOrDefault(s => s.Id == sectionId) ?? throw new InvalidOperationException($"Section with id {sectionId} not found in this course.");
-        section.Update(name, professor);
+
+        section.Professor = professorId;
     }
 
-    public void UpdateSectionDetails(SectionId sectionId, string name, Uri? teachingMaterialsUrl)
+    public void UpdateSectionDetails(SectionId sectionId, string name, Url? teachingMaterialsUrl)
     {
         var section = Sections.FirstOrDefault(s => s.Id == sectionId) ?? throw new InvalidOperationException($"Section with id {sectionId} not found in this course.");
         section.UpdateDetails(name, teachingMaterialsUrl);

@@ -48,10 +48,11 @@ public class UpdateCourseDetailsByCourseOwnerHandler : ICommandHandler<UpdateCou
         var professorId = _userContextService.GetProfessorId();
         if (course.CourseOwner != professorId)
         {
-            throw new UnauthorizedAccessException("You must be the course owner");
+            throw new UnauthorizedAccessException("You must be the course owner.");
         }
 
         course.UpdateCourseDetails(command.Title, command.Description, command.MaxCapacity);
+
         _courseRepository.Update(course);
         await _unitOfWork.SaveChangesAsync();
         return course.Id;

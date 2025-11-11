@@ -2,6 +2,7 @@ using AcademicManagement.Application.Abstractions;
 using AcademicManagement.Application.Abstractions.Repositories;
 using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Professors;
+using AcademicManagement.Domain.Services;
 using FastEndpoints;
 
 namespace AcademicManagement.Application.UseCases.Courses;
@@ -56,18 +57,14 @@ public class AssignProfessorToCourseHandler : ICommandHandler<AssignProfessorToC
             throw new UnauthorizedAccessException("Only the head of department can assign professors to courses.");
         }
 
-        if (professor.DepartmentId != course.Department)
-        {
-            throw new InvalidOperationException("Professor must be assigned to the course's department.");
-        }
-
         if (command.AsCourseOwner)
         {
-            course.AssignProfessorAsCourseOwner(command.ProfessorId);
+            JobAssignmentService.AddProfessorAsCourseOwner(course, professor);
         }
         else
         {
-            course.AssignProfessor(command.ProfessorId);
+
+            JobAssignmentService.AddProfessorToCourse(course, professor);
         }
 
         _courseRepository.Update(course);

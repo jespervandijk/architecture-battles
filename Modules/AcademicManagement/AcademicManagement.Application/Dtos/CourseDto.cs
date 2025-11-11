@@ -12,7 +12,7 @@ public record CourseDto
     public required UniversityId University { get; init; }
     public required DepartmentId Department { get; init; }
     public required ProfessorId CourseOwner { get; init; }
-    public required List<ProfessorId> Professors { get; init; }
+    public required IReadOnlyList<ProfessorId> Professors { get; init; }
     public required Name Title { get; init; }
     public Description? Description { get; init; }
     public required Credits Credits { get; init; }
@@ -43,7 +43,7 @@ public record SectionDto
     public required SectionId Id { get; init; }
     public required string Name { get; init; }
     public required ProfessorId Professor { get; init; }
-    public Uri? TeachingMaterialsUrl { get; init; }
+    public Url? TeachingMaterials { get; init; }
 
     public static SectionDto FromDomain(Section section)
     {
@@ -52,7 +52,7 @@ public record SectionDto
             Id = section.Id,
             Name = section.Name,
             Professor = section.Professor,
-            TeachingMaterialsUrl = section.TeachingMaterialsUrl
+            TeachingMaterials = section.TeachingMaterials
         };
     }
 }

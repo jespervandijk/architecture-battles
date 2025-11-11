@@ -4,6 +4,7 @@ using AcademicManagement.Domain.Aggregates.Courses;
 using AcademicManagement.Domain.Aggregates.Departments;
 using AcademicManagement.Domain.Aggregates.Professors;
 using AcademicManagement.Domain.Aggregates.Universities;
+using AcademicManagement.Domain.Factories;
 using AcademicManagement.Domain.Scalars;
 using FastEndpoints;
 
@@ -55,14 +56,9 @@ public class CreateCourseHandler : ICommandHandler<CreateCourse, CourseId>
     }
     public async Task<CourseId> ExecuteAsync(CreateCourse command, CancellationToken ct)
     {
-        _ = await _universityRepository.GetByIdAsync(command.UniversityId);
+        var university = await _universityRepository.GetByIdAsync(command.UniversityId);
         var department = await _departmentRepository.GetByIdAsync(command.DepartmentId);
         var courseOwnerProfessor = await _professorRepository.GetByIdAsync(command.CourseOwner);
-
-        if (department.UniversityId != command.UniversityId)
-        {
-            throw new InvalidOperationException("Department must belong to the specified university");
-        }
 
         var currentProfessorId = _userContextService.GetProfessorId();
         if (department.HeadOfDepartment != currentProfessorId)
@@ -70,19 +66,10 @@ public class CreateCourseHandler : ICommandHandler<CreateCourse, CourseId>
             throw new UnauthorizedAccessException("Only the head of department can create courses");
         }
 
-        if (courseOwnerProfessor.WorkPlace != command.UniversityId)
-        {
-            throw new InvalidOperationException("Course owner must work at the specified university");
-        }
-
-        if (courseOwnerProfessor.DepartmentId != command.DepartmentId)
-        {
-            throw new InvalidOperationException("Course owner must be assigned to the specified department");
-        }
-
-        var course = Course.Create(command.UniversityId,
-            command.DepartmentId,
-            command.CourseOwner,
+        var course = CourseFactory.Create(
+            university,
+            department,
+            courseOwnerProfessor,
             command.Title,
             command.Credits,
             command.Description,

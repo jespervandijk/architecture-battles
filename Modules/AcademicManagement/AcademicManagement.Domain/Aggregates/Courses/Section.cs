@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using AcademicManagement.Domain.Aggregates.Professors;
+using AcademicManagement.Domain.Scalars;
 
 namespace AcademicManagement.Domain.Aggregates.Courses;
 
@@ -8,15 +9,15 @@ public sealed class Section
     public SectionId Id { get; init; }
     public string Name { get; internal set; }
     public ProfessorId Professor { get; internal set; }
-    public Uri? TeachingMaterialsUrl { get; internal set; }
+    public Url? TeachingMaterials { get; internal set; }
 
     [JsonConstructor]
-    private Section(SectionId id, string name, ProfessorId professor, Uri? teachingMaterialsUrl)
+    private Section(SectionId id, string name, ProfessorId professor, Url? teachingMaterials)
     {
         Id = id;
         Name = name;
         Professor = professor;
-        TeachingMaterialsUrl = teachingMaterialsUrl;
+        TeachingMaterials = teachingMaterials;
     }
 
     internal static Section Create(string name, ProfessorId professor)
@@ -27,16 +28,9 @@ public sealed class Section
             professor,
             null);
     }
-
-    internal void Update(string name, ProfessorId professor)
+    internal void UpdateDetails(string name, Url? teachingMaterials)
     {
         Name = name;
-        Professor = professor;
-    }
-
-    internal void UpdateDetails(string name, Uri? teachingMaterialsUrl)
-    {
-        Name = name;
-        TeachingMaterialsUrl = teachingMaterialsUrl;
+        TeachingMaterials = teachingMaterials;
     }
 }
